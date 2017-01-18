@@ -6,15 +6,6 @@ using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
-    public enum GenerationType
-    {
-        Noise,
-
-        Grouping,
-
-        Blend
-    }
-
     public abstract class GenerationData : MonoBehaviour
     {
         public string name;

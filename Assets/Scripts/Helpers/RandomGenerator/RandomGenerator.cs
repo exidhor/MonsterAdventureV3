@@ -125,6 +125,18 @@ namespace MonsterAdventure
             return _pseudoRandom.Next();
         }
 
+        public float NextWideFloat()
+        {
+            double mantissa = (_pseudoRandom.NextDouble() * 2.0) - 1.0;
+            double exponent = Math.Pow(2.0, _pseudoRandom.Next(-126, 128));
+            return (float)(mantissa * exponent);
+        }
+
+        public float NextFloat()
+        {
+            return (float)_pseudoRandom.NextDouble();
+        }
+
         /*!
          * \brief   Get uniformly a random boolean
          * \return  True of False, with same probability (in theory)

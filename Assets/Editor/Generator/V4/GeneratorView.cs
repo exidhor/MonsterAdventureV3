@@ -128,6 +128,9 @@ namespace MonsterAdventure.Editor
                 case GenerationType.Grouping:
                     return new GroupingView(this, (Grouping)generationMethod, _sectorView);
 
+                case GenerationType.Random:
+                    return new RandomSpreadView(this, (RandomSpread)generationMethod, _sectorView);
+
                 default:
                     return new GenerationMethodView(this, generationMethod, _sectorView);
             }
