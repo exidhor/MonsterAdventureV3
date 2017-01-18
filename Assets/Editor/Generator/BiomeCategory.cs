@@ -86,7 +86,7 @@ namespace MonsterAdventure.Editor
         {
         }
 
-        public override void DrawGizmosContent()
+        protected override void DrawGizmosContent()
         {
             if (_drawColor && _biomeIndex != nothingIndex)
             {

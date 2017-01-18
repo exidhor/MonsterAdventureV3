@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MonsterAdventure
+namespace MonsterAdventure.Generation
 {
     public class GenerationTable
     {
@@ -24,6 +24,11 @@ namespace MonsterAdventure
         public GenerationMethod Get(int id)
         {
             return _table[id];
+        }
+
+        public List<GenerationMethod> GetAll()
+        {
+            return _table;
         }
     }
 }

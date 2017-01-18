@@ -1,0 +1,51 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+
+namespace MonsterAdventure.Generation
+{
+    public enum GenerationType
+    {
+        Noise,
+
+        Grouping,
+
+        Blend
+    }
+
+    public abstract class GenerationData : MonoBehaviour
+    {
+        public string name;
+        public uint level;
+
+        private GenerationMethod _generationMethod;
+
+        private void Awake()
+        {
+            AwakeContent();
+
+            _generationMethod = null;
+        }
+
+        protected abstract void AwakeContent();
+
+        public GenerationMethod Construct(GenerationTable generationTable)
+        {
+            if (_generationMethod == null)
+            {
+                _generationMethod = ConstructGenerationMethod(generationTable);
+            }
+
+            return _generationMethod;
+        }
+
+        protected abstract GenerationMethod ConstructGenerationMethod(GenerationTable generationTable);
+
+        public GenerationMethod GetGenerationMethod()
+        {
+            return _generationMethod;
+        }
+    }
+}

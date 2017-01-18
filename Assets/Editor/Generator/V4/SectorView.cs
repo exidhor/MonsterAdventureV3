@@ -7,12 +7,11 @@ using UnityEngine;
 
 namespace MonsterAdventure.Editor
 {
-    public class SectorCategory : Category
+    public class SectorView : View
     {
+        public delegate void DrawOnSector(Rect sectorRect, int x, int y);
+
         private SectorManager _sectorManager;
-        private BiomeManager _biomeManager;
-        private LakeManager _lakeManager;
-        private MovableGrid _movableGrid;
 
         private bool _drawGrid;
         private string[] _resolutionOptions = null;
@@ -20,7 +19,7 @@ namespace MonsterAdventure.Editor
 
         private bool _drawCoords;
 
-        public SectorCategory(EditorWindow window, bool startingHidden = false) 
+        public SectorView(EditorWindow window, bool startingHidden = false)
             : base(window, "Sector", startingHidden)
         {
             // nothing ? 
@@ -42,12 +41,6 @@ namespace MonsterAdventure.Editor
         {
             _sectorManager = GameObject.FindGameObjectWithTag("SectorManager").GetComponent<SectorManager>();
 
-            _biomeManager = GameObject.FindGameObjectWithTag("BiomeManager").GetComponent<BiomeManager>();
-
-            _lakeManager = GameObject.FindGameObjectWithTag("LakeManager").GetComponent<LakeManager>();
-
-            _movableGrid = GameObject.FindGameObjectWithTag("Map").GetComponent<MovableGrid>();
-
             if (!_sectorManager.IsInitialized())
             {
                 return false;
@@ -59,21 +52,6 @@ namespace MonsterAdventure.Editor
             for (int i = 0; i < sectors.Count; i++)
             {
                 _resolutionOptions[i] = GetResolutionName(i, sectors[i].singleEntryList.Count);
-
-                if (i == _biomeManager.GetTargetLevel())
-                {
-                    _resolutionOptions[i] += " (biomes)";
-                }
-
-                if (i == _lakeManager.targetLevel)
-                {
-                    _resolutionOptions[i] += " (lakes)";
-                }
-
-                if (i == _movableGrid.targetLevel)
-                {
-                    _resolutionOptions[i] += " (movableGrid)";
-                }
             }
 
             return true;
@@ -104,9 +82,14 @@ namespace MonsterAdventure.Editor
 
         private string GetResolutionName(int index, int count)
         {
-            int name = (int)Math.Sqrt(count);
+            int name = (int) Math.Sqrt(count);
 
             return "[" + index + "] " + name + "x" + name;
+        }
+
+        public void AddName(string name, uint level)
+        {
+            _resolutionOptions[level] += " (" + name + ")";
         }
 
         private void DrawGrid()
@@ -115,37 +98,15 @@ namespace MonsterAdventure.Editor
 
             List<Sector> currentSectors = _sectorManager.GetAllSectors()[_resolutionIndex].singleEntryList;
 
-            //Rect bufferGUIRect;
-
             foreach (Sector sector in currentSectors)
             {
-                //bufferGUIRect = GizmosHelper.ConvertToGUICoordinate(sector.GetBounds());
-
-                //GizmosHelper.DrawRect(bufferGUIRect, gridColor, 1);
                 GizmosHelper.DrawRect(sector.GetBounds(), gridColor, 1);
             }
         }
 
-        /*private void DrawCoords()
-        {
-            FakeDoubleEntryList<Sector> list = _sectorManager.GetSectors(_resolutionIndex);
-
-            for (int i = 0; i < list.lineSize; i++)
-            {
-                for (int j = 0; j < list.lineSize; j++)
-                {
-                    String coordStrings = "(" + j + ", " + i + ")";
-
-                    Handles.Label(list.GetElement(i, j).GetPosition(), coordStrings);
-                }
-            }
-        }*/
-
         private void DrawCoords()
         {
             FakeDoubleEntryList<Sector> list = _sectorManager.GetSectors(_resolutionIndex);
-
-            //Vector2 GUIPosition;
 
             for (int i = 0; i < list.lineSize; i++)
             {
@@ -155,10 +116,22 @@ namespace MonsterAdventure.Editor
 
                     String coordStrings = "(" + coords.abs + ", " + coords.ord + ")";
 
-                    //GUIPosition = GizmosHelper.ConvertToGUICoordinate(list.GetElement(i, j).GetPosition());
-
-                    //Handles.Label(GUIPosition, coordStrings);
                     GizmosHelper.DrawLabel(list.GetElement(i, j).GetPosition(), coordStrings);
+                }
+            }
+        }
+
+        public void DrawOnSectors(uint level, DrawOnSector drawOnSector)
+        {
+            FakeDoubleEntryList<Sector> sectorsList = _sectorManager.GetSectors(_resolutionIndex);
+
+            uint lineSize = sectorsList.lineSize;
+
+            for (int x = 0; x < lineSize; x++)
+            {
+                for (int y = 0; y < lineSize; y++)
+                {
+                    drawOnSector(sectorsList.GetElement(x, y).GetBounds(), x, y);
                 }
             }
         }

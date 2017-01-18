@@ -1,17 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
 namespace MonsterAdventure.Editor
 {
-    /*
-     * \brief   [ABSTRACT] This represent a part of available option.
-     *          It provide a Foldout system.
-     *          It need to override "void DrawContent()".
-     */
-    public abstract class Category
+    public abstract class View
     {
-        private bool _isInitialize = false;
+        private bool _isInitialized = false;
 
         private EditorWindow _editorWindow;
 
@@ -26,7 +24,7 @@ namespace MonsterAdventure.Editor
          * \param   a_StartingValue if the option sart "hidden" (false)
          *          or not (true)
          */
-        public Category(EditorWindow editorWindow, string label, bool startingHidden = false)
+        public View(EditorWindow editorWindow, string label, bool startingHidden = false)
         {
             _editorWindow = editorWindow;
 
@@ -49,7 +47,7 @@ namespace MonsterAdventure.Editor
 
             EditorStyles.foldout.fontSize = 14;
             EditorStyles.foldout.fontStyle = FontStyle.Bold;
-   
+
             EditorGUI.indentLevel++;
             if (showOptions)
             {
@@ -78,36 +76,42 @@ namespace MonsterAdventure.Editor
             if (TryToInit())
             {
                 _gizmosDrawer = GameObject.FindGameObjectWithTag("GizmosDrawer").GetComponent<GizmosDrawer>();
-                _isInitialize = true;
+                _isInitialized = true;
+
+                _editorWindow.Repaint();
             }
         }
 
         public void Update()
         {
-            if (!_isInitialize)
+            if (!_isInitialized)
             {
                 Initialize();
-                _editorWindow.Repaint();
             }
 
-            if (_isInitialize)
+            if (_isInitialized)
             {
                 _gizmosDrawer.Draw(DrawGizmosContent);
                 UpdateContent();
             }
         }
 
+        protected abstract void DrawGizmosContent();
+
         protected abstract void UpdateContent();
 
         public void Reset()
         {
-            _isInitialize = false;
+            _isInitialized = false;
 
             ResetContent();
         }
 
         protected abstract void ResetContent();
 
-        protected abstract void DrawGizmosContent();
+        public bool IsInitialized()
+        {
+            return _isInitialized;
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MonsterAdventure
+namespace MonsterAdventure.Generation
 {
     public abstract class BlendingMethod : GenerationMethod
     {
@@ -12,12 +12,13 @@ namespace MonsterAdventure
         private List<GenerationGrid> _applications;
         private BlendFunction _blendFunction;
 
-        protected BlendingMethod(string name, uint level, GenerationTable generationTable, Type valueType, List<GenerationGrid> applications,
-            BlendFunction blendFunction)
-            : base(name, level, generationTable, valueType)
+        protected BlendingMethod(BlendingData blendingData, GenerationTable generationTable)
+            : base(blendingData, generationTable, GenerationType.Blend)
         {
-            _applications = applications;
-            _blendFunction = blendFunction;
+            //_applications = applications;
+            //_blendFunction = blendFunction;
+
+            ComputeGeneration();
         }
 
         protected abstract void Blend(GenerationGrid destination,

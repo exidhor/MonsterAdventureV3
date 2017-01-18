@@ -9,6 +9,8 @@ namespace MonsterAdventure
     {
         public int tileSize;
 
+        public Generation.Generator generator;
+
         public RandomGenerator randomGenerator;
         public SectorManager sectorManager;
         public BiomeManager biomeManager;
@@ -39,6 +41,9 @@ namespace MonsterAdventure
             ConstructBounds();
 
             randomGenerator.Construct();
+
+            generator.Construct();
+
             sectorManager.Construct(_bounds);
             biomeManager.Construct();
             zoneManager.Construct();

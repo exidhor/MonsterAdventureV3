@@ -38,6 +38,11 @@ namespace MonsterAdventure.Editor
             Handles.Label(position, text);
         }
 
+        public static void DrawLabel(Rect rect, string text)
+        {
+            DrawLabel(rect.center, text);
+        }
+
         private static Vector2[] GetVerticesFromRect(Rect rect)
         {
             Vector2[] verts = new Vector2[4];

@@ -46,7 +46,7 @@ namespace MonsterAdventure.Editor
             _movableGrid = null;
         }
 
-        public override void DrawGizmosContent()
+        protected override void DrawGizmosContent()
         {
             if (_drawActualSectors)
             {

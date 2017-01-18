@@ -62,7 +62,7 @@ namespace MonsterAdventure.Editor
             // todo
         }
 
-        public override void DrawGizmosContent()
+        protected override void DrawGizmosContent()
         {
             if(_drawColorWetRate)
                 DrawColorWetRate();
