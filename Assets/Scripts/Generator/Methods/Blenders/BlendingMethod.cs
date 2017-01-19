@@ -13,7 +13,7 @@ namespace MonsterAdventure.Generation
         private BlendFunction _blendFunction;
 
         protected BlendingMethod(BlendingData blendingData, GenerationTable generationTable)
-            : base(blendingData, generationTable, GenerationType.Blend)
+            : base(blendingData, generationTable, GenerationType.Blend, 0) // todo : change 0
         {
             //_applications = applications;
             //_blendFunction = blendFunction;

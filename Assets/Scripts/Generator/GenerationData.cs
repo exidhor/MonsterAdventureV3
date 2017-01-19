@@ -9,7 +9,7 @@ namespace MonsterAdventure.Generation
     public abstract class GenerationData : MonoBehaviour
     {
         public string name;
-        public uint level;
+        //public uint level;
 
         private GenerationMethod _generationMethod;
 
@@ -37,6 +37,11 @@ namespace MonsterAdventure.Generation
         public GenerationMethod GetGenerationMethod()
         {
             return _generationMethod;
+        }
+
+        public uint GetLevel()
+        {
+            return _generationMethod.GetLevel();
         }
     }
 }

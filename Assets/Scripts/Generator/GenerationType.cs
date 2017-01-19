@@ -7,11 +7,15 @@ namespace MonsterAdventure.Generation
 {
     public enum GenerationType
     {
+        // Fillers
         Noise,
         Random,
 
+        // Modifiers
         Grouping,
+        Distance,
 
+        // Blenders
         Blend
     }
 }

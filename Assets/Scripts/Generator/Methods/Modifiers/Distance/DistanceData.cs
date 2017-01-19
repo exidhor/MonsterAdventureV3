@@ -7,14 +7,21 @@ namespace MonsterAdventure.Generation
 {
     public class DistanceData : ModifierData
     {
+        public GroupingData dataSource;
+
         protected override void AwakeContent()
         {
-            throw new NotImplementedException();
+            // nothing
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
-            throw new NotImplementedException();
+            return new DistanceComputing(this, generationTable);
+        }
+
+        public override GenerationData GetSource()
+        {
+            return dataSource;
         }
     }
 }

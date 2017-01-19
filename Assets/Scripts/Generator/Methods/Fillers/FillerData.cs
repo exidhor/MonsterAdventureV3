@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
-    public abstract class ModifierData : GenerationData
+    public abstract class FillerData : GenerationData
     {
-        public abstract GenerationData GetSource();
+        public uint level;
+        public Gradient debugGradient;
     }
 }

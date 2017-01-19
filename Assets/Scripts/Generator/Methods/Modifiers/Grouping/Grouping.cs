@@ -20,7 +20,7 @@ namespace MonsterAdventure.Generation
             {
                 for (int x = 0; x < generationGrid.lineSize; x++)
                 {
-                    float oldValue = GetgroupingData().source.GetGenerationMethod().GetToken(x, y).GetFloatValue();
+                    float oldValue = GetGroupingData().GetSource().GetGenerationMethod().GetToken(x, y).GetFloatValue();
 
                     int newValue = FindNewValueValue(oldValue);
 
@@ -33,9 +33,9 @@ namespace MonsterAdventure.Generation
         {
             float actualSample = 0;
 
-            for (int i = 0; i < GetgroupingData().groupingValues.Count; i++)
+            for (int i = 0; i < GetGroupingData().groupingValues.Count; i++)
             {
-                actualSample += GetgroupingData().groupingValues[i].offset;
+                actualSample += GetGroupingData().groupingValues[i].offset;
 
                 if (actualSample >= oldvalue)
                     return i;
@@ -45,14 +45,14 @@ namespace MonsterAdventure.Generation
             return -1;
         }
 
-        private GroupingData GetgroupingData()
+        private GroupingData GetGroupingData()
         {
             return (GroupingData) _generationData;
         }
 
         public Color GetColor(int index)
         {
-            return GetgroupingData().groupingValues[index].color;
+            return GetGroupingData().groupingValues[index].color;
         }
     }
 }

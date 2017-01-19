@@ -35,9 +35,40 @@ namespace MonsterAdventure.Generation
             }
         }
 
+        public void InitWith(float value)
+        {
+            for (int i = 0; i < _tokens.GetLength(0); i++)
+            {
+                for (int j = 0; j < _tokens.GetLength(1); j++)
+                {
+                    _tokens[i, j].SetValue(value);
+                }
+            }
+        }
+
         public GenerationToken Get(int x, int y)
         {
             return _tokens[x, y];
+        }
+
+        public GenerationToken Get(Coords coords)
+        {
+            return _tokens[coords.abs, coords.ord];
+        }
+
+        public List<GenerationToken> ToList()
+        {
+            List<GenerationToken> gridList = new List<GenerationToken>(_tokens.Length);
+
+            for (int i = 0; i < _tokens.GetLength(0); i++)
+            {
+                for (int j = 0; j < _tokens.GetLength(1); j++)
+                {
+                    gridList.Add(_tokens[i, j]);
+                }
+            }
+
+            return gridList;
         }
 
         public uint GetLevel()

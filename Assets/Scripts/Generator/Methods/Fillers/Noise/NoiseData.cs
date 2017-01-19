@@ -6,10 +6,8 @@ using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
-    public class NoiseData : GenerationData
+    public class NoiseData : FillerData
     {
-        public Gradient debugGradient;
-
         public NoiseGenerator noiseGenerator;
 
         public RandomGenerator randomGenerator

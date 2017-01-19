@@ -7,12 +7,27 @@ namespace MonsterAdventure.Generation
 {
     public abstract class ModifierMethod : GenerationMethod
     {
-        public ModifierMethod(GenerationData generationData,
+        public ModifierMethod(ModifierData data,
             GenerationTable generationTable,
             GenerationType genererationType)
-            : base(generationData, generationTable, genererationType)
+            : base(data, generationTable, genererationType, data.GetSource().GetLevel())
         {
             // nothing ? 
+        }
+
+        protected GenerationData GetSourceData()
+        {
+            return GetModifierData().GetSource();
+        }
+
+        protected GenerationGrid GetSourceGrid()
+        {
+            return GetSourceData().GetGenerationMethod().GetGrid();
+        }
+
+        private ModifierData GetModifierData()
+        {
+            return (ModifierData) _generationData;
         }
     }
 }

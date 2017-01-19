@@ -17,13 +17,14 @@ namespace MonsterAdventure.Generation
 
         public GenerationMethod(GenerationData generationData, 
                                 GenerationTable generationTable, 
-                                GenerationType genererationType)
+                                GenerationType genererationType,
+                                uint level)
         {
             _generationData = generationData;
 
             _id = generationTable.Register(this);
 
-            _generationGrid = new GenerationGrid(_generationData.level, _id);
+            _generationGrid = new GenerationGrid(level, _id);
 
             _generationType = genererationType;
         }

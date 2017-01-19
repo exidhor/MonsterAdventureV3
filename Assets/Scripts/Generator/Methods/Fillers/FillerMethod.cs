@@ -7,10 +7,10 @@ namespace MonsterAdventure.Generation
 {
     public abstract class FillerMethod : GenerationMethod 
     {
-        public FillerMethod(GenerationData generationData, 
+        public FillerMethod(FillerData data, 
             GenerationTable generationTable, 
             GenerationType genererationType)
-            : base(generationData, generationTable, genererationType)
+            : base(data, generationTable, genererationType, data.level)
         {
             // nothing ? 
         }

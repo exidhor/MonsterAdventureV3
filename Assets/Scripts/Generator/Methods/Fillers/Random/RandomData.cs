@@ -6,10 +6,8 @@ using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
-    public class RandomData : GenerationData
+    public class RandomData : FillerData
     {
-        public Gradient debugGradient;
-
         private RandomGenerator _randomGenerator;
 
         protected override void AwakeContent()
