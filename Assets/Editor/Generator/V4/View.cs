@@ -11,7 +11,7 @@ namespace MonsterAdventure.Editor
     {
         private bool _isInitialized = false;
 
-        private EditorWindow _editorWindow;
+        protected EditorWindow _editorWindow;
 
         private bool showOptions = true;
         private string labelMenu;
@@ -24,9 +24,9 @@ namespace MonsterAdventure.Editor
          * \param   a_StartingValue if the option sart "hidden" (false)
          *          or not (true)
          */
-        public View(EditorWindow editorWindow, string label, bool startingHidden = false)
+        public View(EditorWindow generatorWindow, string label, bool startingHidden = false)
         {
-            _editorWindow = editorWindow;
+            _editorWindow = generatorWindow;
 
             showOptions = !startingHidden;
             labelMenu = label;
@@ -91,7 +91,8 @@ namespace MonsterAdventure.Editor
 
             if (_isInitialized)
             {
-                _gizmosDrawer.Draw(DrawGizmosContent);
+                DrawGizmosContent();
+                //_gizmosDrawer.Draw(DrawGizmosContent);
                 UpdateContent();
             }
         }

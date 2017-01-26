@@ -45,5 +45,18 @@ namespace MonsterAdventure.Generation
         {
             return _isInitialized;
         }
+
+        public uint GetMaxSplitLevel()
+        {
+            uint maxSplitLevel = 0;
+
+            for (int i = 0; i < orderedGenerationsDatas.Count; i++)
+            {
+                if (orderedGenerationsDatas[i].GetLevel() > maxSplitLevel)
+                    maxSplitLevel = orderedGenerationsDatas[i].GetLevel();
+            }
+
+            return maxSplitLevel;
+        }
     }
 }

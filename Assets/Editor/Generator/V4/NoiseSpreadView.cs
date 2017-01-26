@@ -12,36 +12,19 @@ namespace MonsterAdventure.Editor
     {
         private bool _drawNoiseColors;
 
-        public NoiseSpreadView(EditorWindow editorWindow, NoiseSpread noiseSpread, SectorView sectorView, bool startingHidden = false)
-            : base(editorWindow, noiseSpread, sectorView, startingHidden)
+        public NoiseSpreadView(GeneratorView generatorWindow, NoiseSpread noiseSpread, GridDisplay gridDisplay, bool startingHidden = false)
+            : base(generatorWindow, noiseSpread, gridDisplay, startingHidden)
         {
             // nothing
         }
 
-        protected override void DrawContent()
-        {
-            base.DrawContent();
-
-            _drawNoiseColors = EditorGUILayout.Toggle("Draw Noise Colors", _drawNoiseColors);
-        }
-
-        protected override void DrawGizmosContent()
-        {
-            if (_drawNoiseColors)
-            {
-                _sectorView.DrawOnSectors(_generationMethod.GetLevel(), DrawNoiseColors);
-            }
-
-            base.DrawGizmosContent();
-        }
-
-        private void DrawNoiseColors(Rect sectorRect, int x, int y)
+        protected override void DrawValue(int x, int y, out Color color, out string text)
         {
             float sample = (float)_generationMethod.GetToken(x, y).GetFloatValue();
 
-            Color color = ((NoiseSpread) _generationMethod).GetDebugGradient().Evaluate(sample);
+            color = ((NoiseSpread) _generationMethod).GetDebugGradient().Evaluate(sample);
 
-            GizmosHelper.DrawFillRect(sectorRect, color);
+            text = _generationMethod.GetToken(x, y).GetDebugLabel(typeof(float));
         }
     }
 }

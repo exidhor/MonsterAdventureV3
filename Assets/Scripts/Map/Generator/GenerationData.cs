@@ -44,4 +44,4 @@ namespace MonsterAdventure.Generation
             return _generationMethod.GetLevel();
         }
     }
-}
+} 

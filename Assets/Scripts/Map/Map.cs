@@ -1,82 +1,88 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace MonsterAdventure
 {
     public class Map : MonoBehaviour
     {
-        public int tileSize;
-
         public Generation.Generator generator;
 
-        public RandomGenerator randomGenerator;
-        public SectorManager sectorManager;
-        public BiomeManager biomeManager;
-        public LakeManager lakeManager;
-        public ZoneManager zoneManager;
+        public Tile tilePrefab;
+        public Sprite baseTileSprite;
+        public Sector sectorPrefab;
 
-        public TileManager tileManager;
-        public MovableGrid movableGrid;
+        [Range(0, 10)] public uint splitSectorLevel;
+        [Range(0, 10)] public uint splitTileLevel;
+
+
+        public SectorManager SectorManager
+        {
+            get { return _sectorManager; }
+        }
+
+        public TileManager TileManager
+        {
+            get { return _tileManager; }
+        }
+
+        public RandomGenerator RandomGenerator
+        {
+            get { return _randomGenerator;}
+        }
+
+        public Rect Bounds
+        {
+            get { return _bounds; }
+        }
+
 
         private Rect _bounds;
 
-        private void Awake()
+        private TileManager _tileManager;
+        private SectorManager _sectorManager;
+        private RandomGenerator _randomGenerator;
+
+        private Vector2 _mapOffset;
+
+        public void Construct(RandomGenerator randomGenerator)
         {
-             // nothing 
-        }
+            _randomGenerator = randomGenerator;
 
-        private void ConstructBounds()
-        {
-            float size = (float)Math.Pow(2, sectorManager.resolution) * tileSize;
+            CreateManagers();
 
-            Vector2 mapPosition = new Vector2(-size / 2, -size / 2);
+            float tileSize =  baseTileSprite.rect.width;
 
-            _bounds = new Rect(mapPosition, new Vector2(size, size));
-        }
+            float sectorSize = (float) Math.Pow(2, splitTileLevel)*tileSize;
 
-        public void Construct()
-        {
-            ConstructBounds();
+            uint lineSize = (uint)Math.Pow(2, splitSectorLevel);
+            uint tileCount = (uint)Math.Pow(2, splitTileLevel);
 
-            randomGenerator.Construct();
+            float offset = -lineSize * sectorSize / 2;
+            Vector2 mapOffset = new Vector2(offset, offset);
+
+            _sectorManager.ConstructSectorPart(splitSectorLevel,
+                lineSize,
+                sectorSize,
+                mapOffset,
+                sectorPrefab);
+
+            _sectorManager.ConstructTilePart(tileCount, tilePrefab, tileSize);
 
             generator.Construct();
-
-            sectorManager.Construct(_bounds);
-            biomeManager.Construct();
-            zoneManager.Construct();
-            lakeManager.Construct(sectorManager);
-            tileManager.Construct(sectorManager.GetLastSectors(), tileSize, randomGenerator, sectorManager); 
         }
 
-        public void Generate()
+        private void CreateManagers()
         {
-            biomeManager.Generate(sectorManager.GetAllSectors(), randomGenerator);
-            zoneManager.Generate(sectorManager.GetLastSectors());
-            lakeManager.Generate(randomGenerator);
-            tileManager.Generate(sectorManager.GetLastSectors());
+            GameObject goSectorManger = new GameObject("SectorManager", typeof(SectorManager));
+            goSectorManger.transform.parent = transform;
+            _sectorManager = goSectorManger.GetComponent<SectorManager>();
 
-            movableGrid.Construct(sectorManager);
-
-            int startCoords = (int)sectorManager.GetSectors(movableGrid.targetLevel).lineSize;
-
-            startCoords /= 2;
-
-            movableGrid.SetPosition(startCoords, startCoords);
-        }
-
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            GameObject goTileManager = new GameObject("TileManager", typeof(TileManager));
+            goTileManager.transform.parent = transform;
+            _tileManager = goTileManager.GetComponent<TileManager>();
         }
     }
 }

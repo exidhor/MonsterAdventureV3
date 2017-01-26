@@ -6,37 +6,22 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     public class Tile : MonoBehaviour
     {
-        private SpriteRenderer _spriteRender;
+        public SpriteRenderer spriteRenderer;
 
-        private Coords _coords;
-
-        private bool _isVisible;
+        private Coords _coordsInSector;
 
         private void Awake()
         {
-            _spriteRender = GetComponent<SpriteRenderer>();
 
-            //SetIsVisible(false);
         }
 
-        public void SetCoords(Coords coords)
+        public void Construct(Coords coordsInSector, Vector2 position)
         {
-            _coords = coords;
-        }
+            _coordsInSector = coordsInSector;
 
-        public void SetSprite(Sprite sprite)
-        {
-           _spriteRender.sprite = sprite;
-        }
-
-        public void SetIsVisible(bool isVisible)
-        {
-            _isVisible = isVisible;
-
-            gameObject.SetActive(_isVisible);
+            transform.position = position;
         }
     }
 }

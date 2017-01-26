@@ -1,4 +1,6 @@
-﻿/*using System;
+﻿
+/*
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,20 +9,26 @@ using UnityEngine;
 
 namespace MonsterAdventure.Editor
 {
-    public class SectorView : View
+    public class GenerationGridView : View
     {
-        public delegate void DrawOnSector(Rect sectorRect, int x, int y);
+        public delegate void ToDrawOnGrid(Rect boxRect, int x, int y);
 
-        private SectorManager _sectorManager;
+        protected GeneratorView GeneratorView
+        {
+            get { return (GeneratorView)_editorWindow; }
+        }
 
         private bool _drawGrid;
         private string[] _resolutionOptions = null;
+        private int[] _resolutionValues;
         private int _resolutionIndex = 0;
+
+        private SectorManager _sectorManager;
 
         private bool _drawCoords;
 
-        public SectorView(EditorWindow window, bool startingHidden = false)
-            : base(window, "Sector", startingHidden)
+        public GenerationGridView(GeneratorView window, bool startingHidden = false)
+            : base(window, "GenerationGrid", startingHidden)
         {
             // nothing ? 
         }
@@ -39,19 +47,24 @@ namespace MonsterAdventure.Editor
 
         protected override bool TryToInit()
         {
-            _sectorManager = GameObject.FindGameObjectWithTag("SectorManager").GetComponent<SectorManager>();
+            Generation.Generator generator = GeneratorView.GetGenerator();
+            _sectorManager = GeneratorView.GetSectorManager();
 
-            if (!_sectorManager.IsInitialized())
+            if (generator == null || !generator.IsInitialized()
+                || _sectorManager == null || !_sectorManager.IsInitialized())
             {
                 return false;
             }
 
-            List<FakeDoubleEntryList<Sector>> sectors = _sectorManager.GetAllSectors();
-            _resolutionOptions = new string[sectors.Count];
+            uint maxLevel = generator.GetMaxSplitLevel();
 
-            for (int i = 0; i < sectors.Count; i++)
+            _resolutionOptions = new string[maxLevel];
+            _resolutionValues = new int[maxLevel];
+
+            for (int i = 0; i < _resolutionOptions.Length; i++)
             {
-                _resolutionOptions[i] = GetResolutionName(i, sectors[i].singleEntryList.Count);
+                _resolutionValues[i] = (int)Math.Pow(2, i);
+                _resolutionOptions[i] = GetResolutionName(i, _resolutionValues[i]);
             }
 
             return true;
@@ -82,7 +95,7 @@ namespace MonsterAdventure.Editor
 
         private string GetResolutionName(int index, int count)
         {
-            int name = (int) Math.Sqrt(count);
+            int name = (int)Math.Sqrt(count);
 
             return "[" + index + "] " + name + "x" + name;
         }
@@ -96,16 +109,18 @@ namespace MonsterAdventure.Editor
         {
             Color gridColor = Color.gray;
 
-            List<Sector> currentSectors = _sectorManager.GetAllSectors()[_resolutionIndex].singleEntryList;
+            int resolution = _resolutionValues[_resolutionIndex];
+            float offset = 0;
 
-            foreach (Sector sector in currentSectors)
+            for(int i = 0; i < resolution; i++)
             {
-                GizmosHelper.DrawRect(sector.GetBounds(), gridColor, 1);
+                //GizmosHelper.DrawLine();
             }
         }
 
         private void DrawCoords()
         {
+            /*
             FakeDoubleEntryList<Sector> list = _sectorManager.GetSectors(_resolutionIndex);
 
             for (int i = 0; i < list.lineSize; i++)
@@ -118,12 +133,12 @@ namespace MonsterAdventure.Editor
 
                     GizmosHelper.DrawLabel(list.GetElement(i, j).GetPosition(), coordStrings);
                 }
-            }
+            }*//*
         }
 
-        public void DrawOnSectors(uint level, DrawOnSector drawOnSector)
+        public void DrawOnGrid(uint level, ToDrawOnGrid toDrawOnGrid)
         {
-            FakeDoubleEntryList<Sector> sectorsList = _sectorManager.GetSectors(_resolutionIndex);
+            /*FakeDoubleEntryList<Sector> sectorsList = _sectorManager.GetSectors(_resolutionIndex);
 
             uint lineSize = sectorsList.lineSize;
 
@@ -131,9 +146,9 @@ namespace MonsterAdventure.Editor
             {
                 for (int y = 0; y < lineSize; y++)
                 {
-                    drawOnSector(sectorsList.GetElement(x, y).GetBounds(), x, y);
+                    toDrawOnGrid(sectorsList.GetElement(x, y).GetBounds(), x, y);
                 }
-            }
+            }*//*
         }
 
         public int GetResolutionIndex()
@@ -141,4 +156,5 @@ namespace MonsterAdventure.Editor
             return _resolutionIndex;
         }
     }
-}*/
+}
+*/

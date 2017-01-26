@@ -8,22 +8,21 @@ namespace MonsterAdventure.Generation
 {
     public class RandomData : FillerData
     {
-        private RandomGenerator _randomGenerator;
+        public RandomGenerator RandomGenerator
+        {
+            get { return _map.RandomGenerator; }
+        }
+
+        private Map _map;
 
         protected override void AwakeContent()
         {
-            Map map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
-            _randomGenerator = map.randomGenerator;
+            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
             return new RandomSpread(this, generationTable);
-        }
-
-        public RandomGenerator GetRandomGenerator()
-        {
-            return _randomGenerator;
         }
     }
 }

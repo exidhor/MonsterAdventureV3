@@ -10,17 +10,25 @@ namespace MonsterAdventure.Editor
 {
     public class GenerationMethodView : View
     {
+        protected GeneratorView GeneratorView
+        {
+            get { return (GeneratorView) _editorWindow; }
+        }
+
         private bool _drawValues;
 
         protected GenerationMethod _generationMethod;
-        protected SectorView _sectorView;
+        protected GridDisplay _gridView;
 
-        public GenerationMethodView(EditorWindow editorWindow, GenerationMethod generationMethod, SectorView sectorView,
+        public GenerationMethodView(GeneratorView generatorWindow, 
+            GenerationMethod generationMethod, 
+            GridDisplay gridView,
             bool startingHidden = false)
-            : base(editorWindow, generationMethod.GetName(), startingHidden)
+
+            : base(generatorWindow, generationMethod.GetName(), startingHidden)
         {
             _generationMethod = generationMethod;
-            _sectorView = sectorView;
+            _gridView = gridView;
         }
 
         protected override void DrawContent()
@@ -30,14 +38,16 @@ namespace MonsterAdventure.Editor
 
         protected override bool TryToInit()
         {
-            if (_sectorView.IsInitialized())
+            /*if (_gridView.IsInitialized())
             {
-                _sectorView.AddName(_generationMethod.GetName(), _generationMethod.GetLevel());
+                _gridView.AddName(_generationMethod.GetName(), _generationMethod.GetLevel());
 
                 return true;
             }
 
-            return false;
+            return false;*/
+
+            return true;
         }
 
         protected override void UpdateContent()
@@ -54,13 +64,15 @@ namespace MonsterAdventure.Editor
         {
             if (_drawValues)
             {
-                _sectorView.DrawOnSectors(_generationMethod.GetLevel(), DrawValue);
+                uint size = (uint) Math.Pow(2, _generationMethod.GetLevel());
+                _gridView.SetDatas(size, DrawValue);
             }
         }
 
-        private void DrawValue(Rect sectorRect, int x, int y)
+        protected virtual void DrawValue(int x, int y, out Color color, out string text)
         {
-            GizmosHelper.DrawLabel(sectorRect, _generationMethod.GetToken(x, y).GetDebugLabel(typeof(float)));
+            text = _generationMethod.GetToken(x, y).GetDebugLabel(typeof(float));
+            color = Color.white;
         }
     }
 }

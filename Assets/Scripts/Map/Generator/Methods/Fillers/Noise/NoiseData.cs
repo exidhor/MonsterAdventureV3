@@ -12,7 +12,7 @@ namespace MonsterAdventure.Generation
 
         public RandomGenerator randomGenerator
         {
-            get { return _randomGenerator; }
+            get { return _map.RandomGenerator; }
         }
 
         public Transform noiseTransform
@@ -20,13 +20,11 @@ namespace MonsterAdventure.Generation
             get { return _map.transform; }
         }
 
-        protected RandomGenerator _randomGenerator;
         protected Map _map;
 
         protected override void AwakeContent()
         {
             _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
-            _randomGenerator = _map.randomGenerator;
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)

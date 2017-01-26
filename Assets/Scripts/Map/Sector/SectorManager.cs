@@ -8,111 +8,119 @@ namespace MonsterAdventure
 {
     public class SectorManager : MonoBehaviour
     {
-        [Range(0, 12)]
-        public int resolution;
-
-        private List<FakeDoubleEntryList<Sector>> _sectorPerLevel;
-
-        private bool _isInitialized = false;
-
-        private void Awake()
+        public uint Count
         {
-            // nothing
+            get { return (uint)(_sectors.GetLength(0)*_sectors.GetLength(1)); }
         }
 
-        public void Construct(Rect mapBounds)
+        public uint LineSize
         {
-            // construct the sector list
-            _sectorPerLevel = new List<FakeDoubleEntryList<Sector>>();
-            
-            // init with the first sector (the big parent)
-            int currentLevel = 0;
+            get { return (uint) (_sectors.GetLength(0)); }
+        }
 
-            _sectorPerLevel.Add(new FakeDoubleEntryList<Sector>(0));
+        public float SectorSize
+        {
+            get { return _sectorSize; }
+        }
 
-            _sectorPerLevel[currentLevel].singleEntryList.Add(new Sector(new Coords(0, 0), 
-                                                                         (uint)currentLevel, 
-                                                                         mapBounds));  
-            
-            // Start the division
-            _sectorPerLevel[currentLevel].singleEntryList[0].Divide((uint)resolution);
-            
-            // retrieve then store all the sectors created by the division
-            List<Sector[]> childrenStack = new List<Sector[]>();
-            List<Sector[]> childrenStack_next = new List<Sector[]>();
-             
-            childrenStack.Add(_sectorPerLevel[currentLevel].singleEntryList[0].GetChildren());
-            currentLevel++;
+        private bool _isInitialized;
 
-            while (childrenStack.Count > 0)
+        private Sector[,] _sectors;
+        private float _sectorSize;
+        private uint _splitLevel;
+
+        public void Construct(uint splitSectorLevel, 
+            uint splitTileLevel, 
+            float sectorSize,
+            float tileSize, 
+            Sector sectorPrefab,
+            Tile tilePrefab)
+        {
+            _sectorSize = sectorSize;
+
+            int lineSize = (int)Math.Pow(2, splitSectorLevel);
+            uint tileCount = (uint) Math.Pow(2, splitTileLevel); 
+
+            _sectors = new Sector[lineSize, lineSize];
+
+            float offset = -lineSize* _sectorSize / 2;
+            Vector2 mapOffset = new Vector2(offset, offset);
+
+            for (int i = 0; i < _sectors.GetLength(0); i++)
             {
-                // we create a new list to store the current children
-                _sectorPerLevel.Add(new FakeDoubleEntryList<Sector>(0));
-
-                // we add the stack to the sector list
-                foreach (Sector[] children in childrenStack)
+                for (int j = 0; j < _sectors.GetLength(1); j++)
                 {
-                    foreach (Sector child in children)
-                    {
-                        _sectorPerLevel[currentLevel].singleEntryList.Add(child);
-
-                        if (currentLevel < resolution)
-                        {
-                            childrenStack_next.Add(child.GetChildren());
-                        }
-                    } 
+                    _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
+                    _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
                 }
-
-                // we swap the stacks
-                childrenStack = new List<Sector[]>(childrenStack_next);
-                childrenStack_next.Clear();
-
-                // we increase the level
-                currentLevel++;
             }
+        }
 
-            SectorComparer sectorComparer = new SectorComparer();
+        public void ConstructSectorPart(uint splitSectorLevel,
+            uint lineSize,
+            float sectorSize,
+            Vector2 mapOffset,
+            Sector sectorPrefab)
+        {
+            _splitLevel = splitSectorLevel;
+            _sectorSize = sectorSize;
 
-            // we reorder the sectors to improve speed access
-            for (int i_level = 0; i_level < _sectorPerLevel.Count; i_level++)
+            _sectors = new Sector[lineSize, lineSize];
+
+            for (int i = 0; i < _sectors.GetLength(0); i++)
             {
-                _sectorPerLevel[i_level].singleEntryList.Sort(sectorComparer);
+                for (int j = 0; j < _sectors.GetLength(1); j++)
+                {
+                    _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
+                }
             }
+        }
 
-            // we set the lineSize into the FakeList
-            for (int i_level = 0; i_level < _sectorPerLevel.Count; i_level++)
+        public void ConstructTilePart(uint tileCount, Tile tilePrefab, float tileSize)
+        {
+            for (int i = 0; i < _sectors.GetLength(0); i++)
             {
-                _sectorPerLevel[i_level].lineSize = (uint)Math.Sqrt(_sectorPerLevel[i_level].singleEntryList.Count);
+                for (int j = 0; j < _sectors.GetLength(1); j++)
+                {
+                    _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
+                }
             }
-
-            _isInitialized = true;
-
-            Debug.Log("SectorManager constructed");
         }
 
-        public List<FakeDoubleEntryList<Sector>> GetAllSectors()
+        private Sector InstantiateSector(Coords coords, Vector2 mapOffset, Sector sectorPrefab)
         {
-            return _sectorPerLevel;
+            Sector sector = Instantiate<Sector>(sectorPrefab);
+            sector.transform.parent = gameObject.transform;
+
+            Rect sectorBounds = ComputeSectorBounds(coords, mapOffset);
+
+            sector.Construct(sectorBounds, coords);
+
+            return sector;
         }
 
-        public FakeDoubleEntryList<Sector> GetSectors(int level)
+        private Rect ComputeSectorBounds(Coords coords, Vector2 mapOffset)
         {
-            return _sectorPerLevel[level];
-        }
+            Rect sectorBounds = new Rect();
 
-        public FakeDoubleEntryList<Sector> GetLastSectors()
-        {
-            return _sectorPerLevel.Last();
-        }
+            sectorBounds.position = new Vector2(coords.abs * _sectorSize, 
+                                                coords.ord * _sectorSize);
 
-        public Sector Get(int x, int y, int level)
-        {
-            return _sectorPerLevel[level].GetElement(x, y);
+            sectorBounds.position += mapOffset;
+
+            sectorBounds.size = new Vector2(_sectorSize, _sectorSize);
+
+            return sectorBounds;
         }
 
         public bool IsInitialized()
         {
             return _isInitialized;
+        }
+
+        public Sector Get(int x, int y)
+        {
+            return _sectors[x, y];
         }
     }
 }

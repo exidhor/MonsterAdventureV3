@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -41,6 +42,13 @@ namespace MonsterAdventure.Editor
         public static void DrawLabel(Rect rect, string text)
         {
             DrawLabel(rect.center, text);
+        }
+
+        public static void DrawLine(Vector2 start, Vector2 end, Color color)
+        {
+            Gizmos.color = color;
+            Gizmos.DrawLine(ConvertToGUICoordinate(start), 
+                ConvertToGUICoordinate(end));
         }
 
         private static Vector2[] GetVerticesFromRect(Rect rect)

@@ -7,14 +7,18 @@ namespace MonsterAdventure.Editor
 {
     public class GeneratorView : EditorWindow
     {
-        private Generator _generator;
+        private Map _map;
 
-        private SectorView _sectorView;
+        private Generator _generator = null;
+
+        //private GenerationGridView _gridView;
         private List<GenerationMethodView> _generationMethodViews;
 
         private Vector2 _positionForScrollView;
 
         private bool _gameIsRunning = false;
+
+        private static GridDisplay _gridDisplay;
 
         [MenuItem("Window/GeneratorView")]
         static void Init()
@@ -23,12 +27,20 @@ namespace MonsterAdventure.Editor
             GeneratorView instance = (GeneratorView) EditorWindow.GetWindow(typeof(GeneratorView));
             instance.titleContent = new GUIContent("Generator View");
 
+            _gridDisplay = (GridDisplay)EditorWindow.GetWindow(typeof(GridDisplay));
+            _gridDisplay.titleContent = new GUIContent("Grid Display");
+
+            _gridDisplay.Show();
+
             instance.Show();
         }
 
         private void OnEnable()
         {
-            // nothing ? 
+#if UNITY_EDITOR
+            QualitySettings.vSyncCount = 0;  // VSync must be disabled
+            Application.targetFrameRate = 45;
+#endif
         }
 
         private void OnGUI()
@@ -39,7 +51,7 @@ namespace MonsterAdventure.Editor
             {
                 if (_gameIsRunning)
                 {
-                    _sectorView.Draw();
+                    //_gridView.Draw();
 
                     DrawGenerationMethodViews();
                 }
@@ -51,7 +63,9 @@ namespace MonsterAdventure.Editor
         {
             if (EditorApplication.isPlaying && !EditorApplication.isPaused && !_gameIsRunning)
             {
-                FindGenerator();
+                FindGameObjectsInScene();
+
+                _gridDisplay = (GridDisplay)EditorWindow.GetWindow(typeof(GridDisplay));
 
                 if (_generator != null && _generator.IsInitialized())
                 {
@@ -70,20 +84,25 @@ namespace MonsterAdventure.Editor
 
             if (_gameIsRunning)
             {
-                _sectorView.Update();
+                //_gridView.Update();
 
                 UpdateGenerationMethodViews();
             }
         }
 
-        private void FindGenerator()
+        private void FindGameObjectsInScene()
         {
-            _generator = GameObject.FindGameObjectWithTag("Generator").GetComponent<Generator>();
+            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
+
+            if (_map != null)
+            {
+                _generator = _map.generator;
+            }
         }
 
         private void CreateViews()
         {
-            _sectorView = new SectorView(this);
+            //_gridView = new GenerationGridView(this);
             _generationMethodViews = new List<GenerationMethodView>();
 
             List<GenerationMethod> generationMethods = _generator.GetGenerationMethods();
@@ -92,6 +111,8 @@ namespace MonsterAdventure.Editor
             {
                 _generationMethodViews.Add(ConstructView(generationMethods[i]));
             }
+
+            Repaint();
         }
 
         private void DrawGenerationMethodViews()
@@ -123,17 +144,42 @@ namespace MonsterAdventure.Editor
             switch (generationMethod.GetGenerationType())
             {
                 case GenerationType.Noise:
-                    return new NoiseSpreadView(this, (NoiseSpread)generationMethod, _sectorView);
+                    return new NoiseSpreadView(this, (NoiseSpread) generationMethod, _gridDisplay);
 
                 case GenerationType.Grouping:
-                    return new GroupingView(this, (Grouping)generationMethod, _sectorView);
+                    return new GroupingView(this, (Grouping) generationMethod, _gridDisplay);
 
                 case GenerationType.Random:
-                    return new RandomSpreadView(this, (RandomSpread)generationMethod, _sectorView);
+                    return new RandomSpreadView(this, (RandomSpread) generationMethod, _gridDisplay);
 
                 default:
-                    return new GenerationMethodView(this, generationMethod, _sectorView);
+                    return new GenerationMethodView(this, generationMethod, _gridDisplay);
             }
+        }
+
+        public SectorManager GetSectorManager()
+        {
+            if (_map != null)
+            {
+                return _map.SectorManager;
+            }
+
+            return null;
+        }
+
+        public TileManager GetTileManager()
+        {
+            if (_map != null)
+            {
+                return _map.TileManager;
+            }
+
+            return null;
+        }
+
+        public Generator GetGenerator()
+        {
+            return _generator;
         }
     }
 }

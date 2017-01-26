@@ -12,36 +12,19 @@ namespace MonsterAdventure.Editor
     {
         private bool _drawRandomColors;
 
-        public RandomSpreadView(EditorWindow editorWindow, RandomSpread randomSpread, SectorView sectorView, bool startingHidden = false)
-            : base(editorWindow, randomSpread, sectorView, startingHidden)
+        public RandomSpreadView(GeneratorView generatorWindow, RandomSpread randomSpread, GridDisplay gridDisplay, bool startingHidden = false)
+            : base(generatorWindow, randomSpread, gridDisplay, startingHidden)
         {
             // nothing
         }
 
-        protected override void DrawContent()
-        {
-            base.DrawContent();
-
-            _drawRandomColors = EditorGUILayout.Toggle("Draw Random Colors", _drawRandomColors);
-        }
-
-        protected override void DrawGizmosContent()
-        {
-            if (_drawRandomColors)
-            {
-                _sectorView.DrawOnSectors(_generationMethod.GetLevel(), DrawRandomColors);
-            }
-
-            base.DrawGizmosContent();
-        }
-
-        private void DrawRandomColors(Rect sectorRect, int x, int y)
+        protected override void DrawValue(int x, int y, out Color color, out string text)
         {
             float sample = (float)_generationMethod.GetToken(x, y).GetFloatValue();
 
-            Color color = ((RandomSpread)_generationMethod).GetDebugGradient().Evaluate(sample);
+            color = ((RandomSpread)_generationMethod).GetDebugGradient().Evaluate(sample);
 
-            GizmosHelper.DrawFillRect(sectorRect, color);
+            text = _generationMethod.GetToken(x, y).GetDebugLabel(typeof(float));
         }
     }
 }

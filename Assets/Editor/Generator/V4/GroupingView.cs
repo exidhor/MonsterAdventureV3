@@ -12,36 +12,19 @@ namespace MonsterAdventure.Editor
     {
         private bool _drawValueColors;
 
-        public GroupingView(EditorWindow editorWindow, Grouping grouping, SectorView sectorView, bool startingHidden = false)
-            : base(editorWindow, grouping, sectorView, startingHidden)
+        public GroupingView(GeneratorView generatorWindow, Grouping grouping, GridDisplay gridDisplay, bool startingHidden = false)
+            : base(generatorWindow, grouping, gridDisplay, startingHidden)
         {
             // nothing
         }
 
-        protected override void DrawContent()
-        {
-            base.DrawContent();
-
-            _drawValueColors = EditorGUILayout.Toggle("Draw Value Colors", _drawValueColors);
-        }
-
-        protected override void DrawGizmosContent()
-        {
-            if (_drawValueColors)
-            {
-                _sectorView.DrawOnSectors(_generationMethod.GetLevel(), DrawValueColors);
-            }
-
-            base.DrawGizmosContent();
-        }
-
-        private void DrawValueColors(Rect sectorRect, int x, int y)
+        protected override void DrawValue(int x, int y, out Color color, out string text)
         {
             int indexNoiseValue = _generationMethod.GetToken(x, y).GetIntValue();
 
-            Color color = ((Grouping) _generationMethod).GetColor(indexNoiseValue);
+            color = ((Grouping)_generationMethod).GetColor(indexNoiseValue);
 
-            GizmosHelper.DrawFillRect(sectorRect, color);
+            text = _generationMethod.GetToken(x, y).GetDebugLabel(typeof(int));
         }
     }
 }
