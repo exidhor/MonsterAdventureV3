@@ -72,10 +72,10 @@ namespace MonsterAdventure.Editor
 
             float boxSize = _baseViewRect.width / lineSize * GetZoomValue();
 
-            int start_x = (int)Math.Floor((decimal)(_positionForScrollView.x /boxSize));
-            int start_y = (int)Math.Floor((decimal)(_positionForScrollView.y / boxSize));
-            int end_x = (int)Math.Ceiling((decimal)((_positionForScrollView.x + _scrolPosition.width) / boxSize));
-            int end_y = (int)Math.Ceiling((decimal)((_positionForScrollView.y + _scrolPosition.height) / boxSize));
+            int start_x = (int)Mathf.Clamp((float)Math.Floor((decimal)(_positionForScrollView.x / boxSize)), 0f, (float)lineSize);
+            int start_y = (int)Mathf.Clamp((float)Math.Floor((decimal)(_positionForScrollView.y / boxSize)), 0f, (float)lineSize);
+            int end_x = (int)Mathf.Clamp((float)Math.Ceiling((decimal)((_positionForScrollView.x + _scrolPosition.width) / boxSize)), 0f, (float)lineSize);
+            int end_y = (int)Mathf.Clamp((float)Math.Ceiling((decimal)((_positionForScrollView.y + _scrolPosition.height) / boxSize)), 0f, (float)lineSize);
 
             int nbDrawCall = 0;
 
@@ -133,14 +133,7 @@ namespace MonsterAdventure.Editor
                 _positionZoomSlider.x = _viewRect.xMax + _offset;
             }*/
 
-            if (position.height < _viewRect.height)
-            {
-                _positionZoomSlider.height = position.height;
-            }
-            else
-            {
-                _positionZoomSlider.height = _viewRect.height;
-            }
+            _positionZoomSlider.height = position.height;
         }
 
         private float GetZoomValue()
