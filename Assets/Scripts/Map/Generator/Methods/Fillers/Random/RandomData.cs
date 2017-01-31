@@ -17,6 +17,11 @@ namespace MonsterAdventure.Generation
 
         protected override void AwakeContent()
         {
+            // nothing
+        }
+
+        protected override void StartContent()
+        {
             _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
         }
 

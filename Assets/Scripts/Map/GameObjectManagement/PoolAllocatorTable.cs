@@ -32,9 +32,26 @@ namespace MonsterAdventure
             return GetPoolAllocator(trace.InstanceID);
         }
 
-        public GameObject InstanciateTrace(Trace trace)
+        public void InstanciateTrace(TracedObject tracedObject)
         {
-            return GetPoolAllocator(trace).GetFreeResource();
+            if (tracedObject.IsInstanciated)
+            {
+                Debug.Log("Try to instanciate " + tracedObject + " but the object is already instanciated.");
+            }
+
+            GameObject newGameObject = GetPoolAllocator(tracedObject.Trace).GetFreeResource();
+            tracedObject.Instanciate(newGameObject);
+        }
+
+        public void ReleaseGameObject(TracedObject tracedObject)
+        {
+            if (!tracedObject.IsInstanciated)
+            {
+                Debug.Log("Try to release " + tracedObject + " but the object is already released.");
+            }
+
+            GetPoolAllocator(tracedObject.Trace).ReleaseResource(tracedObject.GameObject);
+            tracedObject.Release();
         }
 
         private PoolAllocator InstanciatePoolAllocator(GameObject model, bool isStatic, uint expandSize)

@@ -15,6 +15,11 @@ namespace MonsterAdventure.Generation
             // nothing
         }
 
+        protected override void StartContent()
+        {
+            // nothing
+        }
+
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
             return new Grouping(this, generationTable);

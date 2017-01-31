@@ -51,7 +51,7 @@ namespace MonsterAdventure
                 for (int j = 0; j < _sectors.GetLength(1); j++)
                 {
                     _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
-                    _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
+                    //_sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
                 }
             }
         }
@@ -67,15 +67,17 @@ namespace MonsterAdventure
 
             _sectors = new Sector[lineSize, lineSize];
 
+            /*
             for (int i = 0; i < _sectors.GetLength(0); i++)
             {
                 for (int j = 0; j < _sectors.GetLength(1); j++)
                 {
                     _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
                 }
-            }
+            }*/
         }
 
+        /*
         public void ConstructTilePart(uint tileCount, Tile tilePrefab, float tileSize)
         {
             for (int i = 0; i < _sectors.GetLength(0); i++)
@@ -85,7 +87,7 @@ namespace MonsterAdventure
                     _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
                 }
             }
-        }
+        }*/
 
         private Sector InstantiateSector(Coords coords, Vector2 mapOffset, Sector sectorPrefab)
         {

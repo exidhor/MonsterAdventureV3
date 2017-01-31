@@ -14,6 +14,11 @@ namespace MonsterAdventure.Generation
             // nothing
         }
 
+        protected override void StartContent()
+        {
+            // nothing
+        }
+
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
             return new DistanceComputing(this, generationTable);

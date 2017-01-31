@@ -12,6 +12,11 @@ namespace MonsterAdventure.Generation
             // todo
         }
 
+        protected override void StartContent()
+        {
+            // todo
+        }
+
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
             throw new NotImplementedException();

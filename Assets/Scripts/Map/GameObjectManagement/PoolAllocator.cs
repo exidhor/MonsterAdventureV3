@@ -65,7 +65,7 @@ namespace MonsterAdventure
             return Resources[i].GameObject;
         }
 
-        public void ReleaseFreeResource(GameObject gameObject)
+        public void ReleaseResource(GameObject gameObject)
         {
             for (int i = 0; i < Resources.Count; i++)
             {

@@ -8,15 +8,17 @@ namespace MonsterAdventure.Generation
 {
     public class InstancierMethod : GenerationMethod
     {
-        public InstancierMethod(InstancierData data, GenerationTable generationTable)
+        private SectorManager _sectorManager;
+
+        public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager)
             : base(data, generationTable, GenerationType.Instancier, data.dataSource.GetLevel())
         {
-
+            _sectorManager = sectorManager;
         }
 
         protected override void FillGenerationGrid(GenerationGrid generationGrid)
         {
-            throw new NotImplementedException();
+            // todo
         }
     }
 }

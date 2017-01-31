@@ -70,7 +70,7 @@ namespace MonsterAdventure
                 mapOffset,
                 sectorPrefab);
 
-            _sectorManager.ConstructTilePart(tileCount, tilePrefab, tileSize);
+            //_sectorManager.ConstructTilePart(tileCount, tilePrefab, tileSize);
 
             generator.Construct();
         }

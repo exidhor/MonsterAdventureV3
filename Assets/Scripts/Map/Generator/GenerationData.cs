@@ -20,7 +20,14 @@ namespace MonsterAdventure.Generation
             _generationMethod = null;
         }
 
+        private void Start()
+        {
+            StartContent();
+        }
+
         protected abstract void AwakeContent();
+
+        protected abstract void StartContent();
 
         public GenerationMethod Construct(GenerationTable generationTable)
         {

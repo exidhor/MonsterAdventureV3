@@ -13,7 +13,7 @@ namespace MonsterAdventure
 
         private Coords _coords;
 
-        private Tile[,] _tiles;
+        private List<TracedObject> _tracedObjects;
 
         public void Construct(Rect bounds, Coords coords)
         {
@@ -25,6 +25,7 @@ namespace MonsterAdventure
             name = "Sector (" + coords.abs + ", " + coords.ord + ")";
         }
 
+        /*
         public void ConstructTile(uint tileCount, Tile tilePrefab, float tileSize)
         {
             _tiles = new Tile[tileCount, tileCount];
@@ -58,6 +59,6 @@ namespace MonsterAdventure
             position.y += coordsInSector.ord*tileSize;
 
             return position;
-        }
+        }*/
     }
 }
