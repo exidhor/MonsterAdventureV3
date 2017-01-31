@@ -25,7 +25,6 @@ namespace MonsterAdventure.Generation
 
             List<List<Coords>> toSortPerGroups = ConstructToSortList(GetSourceGrid(), _sortedDistancesPerValues.Count);
 
-            // at the first iteration, we find the limit
             for (int groupIndex = 0; groupIndex < toSortPerGroups.Count; groupIndex++)
             {
                 FindDistance(toSortPerGroups[groupIndex], _sortedDistancesPerValues[groupIndex], generationGrid);
@@ -69,7 +68,6 @@ namespace MonsterAdventure.Generation
                         destinationGrid))
                     {
                         sortedCoordAtCurrentDistance.Add(toSort[i]);
-                        destinationGrid.Get(toSort[i]).SetValue(currentDistanceValue);
                         toSort.RemoveAt(i);
                         i--;
                     }
@@ -79,6 +77,12 @@ namespace MonsterAdventure.Generation
                 {
                     // create an entry into the dictionary
                     sortedDistance.Add(currentDistanceValue, sortedCoordAtCurrentDistance);
+
+                    // actualize distance (we cant do before because of the algo of "IsNearDeterminedDistance")
+                    for (int i = 0; i < sortedCoordAtCurrentDistance.Count; i++)
+                    {
+                        destinationGrid.Get(sortedCoordAtCurrentDistance[i]).SetValue(currentDistanceValue);
+                    }
                 }
 
                 // actualize the distance

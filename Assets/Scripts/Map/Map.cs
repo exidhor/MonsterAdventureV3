@@ -53,7 +53,8 @@ namespace MonsterAdventure
 
             CreateManagers();
 
-            float tileSize =  baseTileSprite.rect.width;
+            //float tileSize =  baseTileSprite.rect.width;
+            float tileSize =  1f;
 
             float sectorSize = (float) Math.Pow(2, splitTileLevel)*tileSize;
 

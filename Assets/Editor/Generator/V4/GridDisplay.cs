@@ -26,15 +26,8 @@ namespace MonsterAdventure.Editor
 
         private DrawOnBox _drawOnBox;
 
-        /*[MenuItem("Window/Grid Display")]
-        static void Init()
-        {
-            // Get existing open window or if none, make a new one:
-            GridDisplay instance = (GridDisplay)EditorWindow.GetWindow(typeof(GridDisplay));
-            instance.titleContent = new GUIContent("Grid Display");
-
-            instance.Show();
-        }*/
+        private float _timeUntilRefresh;
+        private float _refreshTime = 1/3f;
 
         private void OnEnable()
         {
@@ -45,6 +38,8 @@ namespace MonsterAdventure.Editor
                 _viewRect.yMin, 
                 5 + _offset, 
                 _viewRect.yMax - _scrolPosition.height);
+
+            _timeUntilRefresh = _refreshTime;
         }
 
         public void SetDatas(uint size, DrawOnBox drawOnBox)
@@ -77,8 +72,6 @@ namespace MonsterAdventure.Editor
             int end_x = (int)Mathf.Clamp((float)Math.Ceiling((decimal)((_positionForScrollView.x + _scrolPosition.width) / boxSize)), 0f, (float)lineSize);
             int end_y = (int)Mathf.Clamp((float)Math.Ceiling((decimal)((_positionForScrollView.y + _scrolPosition.height) / boxSize)), 0f, (float)lineSize);
 
-            int nbDrawCall = 0;
-
             for (int x = start_x; x < end_x; x++)
             {
                 for (int y = start_y; y < end_y; y++)
@@ -90,19 +83,28 @@ namespace MonsterAdventure.Editor
 
                     GUI.backgroundColor = colorBox;
                     GUI.Box(new Rect(x * boxSize, y * boxSize, boxSize, boxSize), textBox);
-
-                    nbDrawCall++;
                 }
             }
 
             GUI.EndScrollView();
 
+            GUI.backgroundColor = Color.gray;
             _zoom = GUI.VerticalSlider(_positionZoomSlider, _zoom, 10f, 1f);
+        }
 
-            Debug.Log("Nb Draw Call from Grid Display : " + nbDrawCall);
-            Debug.Log("Start x : " + start_x + ", End x : " + end_x);
-            Debug.Log("Start y : " + start_y + ", End y : " + end_y);
+        private bool ActualizeTime()
+        {
+            bool isTimeToRefresh = false;
 
+            _timeUntilRefresh -= Time.deltaTime;
+
+            while (_timeUntilRefresh <= 0)
+            {
+                _timeUntilRefresh = _refreshTime - _timeUntilRefresh;
+                isTimeToRefresh = true;
+            }
+
+            return isTimeToRefresh;
         }
 
         private void UpdateViewRect()
@@ -123,15 +125,10 @@ namespace MonsterAdventure.Editor
             {
                 _positionZoomSlider.x = _scrolPosition.width + _offset;
             }
-            else// if (_scrolPosition.height < _viewRect.height)
+            else
             {
                 _positionZoomSlider.x = _scrolPosition.width + _offset;
             }
-            /*
-            else
-            {
-                _positionZoomSlider.x = _viewRect.xMax + _offset;
-            }*/
 
             _positionZoomSlider.height = position.height;
         }
@@ -139,6 +136,7 @@ namespace MonsterAdventure.Editor
         private float GetZoomValue()
         {
             return _zoom*_zoom;
+            //return 1;
         }
     }
 }

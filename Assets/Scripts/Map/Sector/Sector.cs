@@ -33,12 +33,12 @@ namespace MonsterAdventure
             {
                 for (int j = 0; j < _tiles.GetLength(1); j++)
                 {
-                    _tiles[i, j] = InstantiateTile(new Coords(i, j), tilePrefab, tileSize);
+                    _tiles[i, j] = InstanciateTile(new Coords(i, j), tilePrefab, tileSize);
                 }
             }
         }
 
-        private Tile InstantiateTile(Coords coordsInSector, Tile tilePrefab, float tileSize)
+        private Tile InstanciateTile(Coords coordsInSector, Tile tilePrefab, float tileSize)
         {
             Tile tile = Instantiate<Tile>(tilePrefab);
             tile.transform.parent = gameObject.transform;

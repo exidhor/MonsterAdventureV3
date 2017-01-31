@@ -16,6 +16,9 @@ namespace MonsterAdventure.Generation
         Distance,
 
         // Blenders
-        Blend
+        Blend,
+
+        // Instanciers
+        Instancier    
     }
 }

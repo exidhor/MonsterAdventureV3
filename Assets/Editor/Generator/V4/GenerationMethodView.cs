@@ -16,6 +16,8 @@ namespace MonsterAdventure.Editor
         }
 
         private bool _drawValues;
+        private bool _lastState;
+        private bool _hasChanged;
 
         protected GenerationMethod _generationMethod;
         protected GridDisplay _gridView;
@@ -29,6 +31,8 @@ namespace MonsterAdventure.Editor
         {
             _generationMethod = generationMethod;
             _gridView = gridView;
+
+            _lastState = _drawValues;
         }
 
         protected override void DrawContent()
@@ -38,21 +42,21 @@ namespace MonsterAdventure.Editor
 
         protected override bool TryToInit()
         {
-            /*if (_gridView.IsInitialized())
-            {
-                _gridView.AddName(_generationMethod.GetName(), _generationMethod.GetLevel());
-
-                return true;
-            }
-
-            return false;*/
-
             return true;
         }
 
         protected override void UpdateContent()
         {
-            // todo
+            if (_lastState != _drawValues)
+            {
+                _hasChanged = true;
+            }
+            else
+            {
+                _hasChanged = false;
+            }
+
+            _lastState = _drawValues;
         }
 
         protected override void ResetContent()
@@ -73,6 +77,17 @@ namespace MonsterAdventure.Editor
         {
             text = _generationMethod.GetToken(x, y).GetDebugLabel(typeof(float));
             color = Color.white;
+        }
+
+        public void DisableDraw()
+        {
+            _drawValues = false;
+            _lastState = false;
+        }
+
+        public bool HasChanged()
+        {
+            return _hasChanged;
         }
     }
 }

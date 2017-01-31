@@ -39,7 +39,7 @@ namespace MonsterAdventure.Editor
         {
 #if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;  // VSync must be disabled
-            Application.targetFrameRate = 45;
+            Application.targetFrameRate = 15;
 #endif
         }
 
@@ -136,6 +136,22 @@ namespace MonsterAdventure.Editor
             for (int i = 0; i < _generationMethodViews.Count; i++)
             {
                 _generationMethodViews[i].Update();
+
+                if (_generationMethodViews[i].HasChanged())
+                {
+                    DisableOtherGenerationMethodViews(i);
+                }
+            }
+        }
+
+        private void DisableOtherGenerationMethodViews(int indexToNotDisable)
+        {
+            for (int i = 0; i < _generationMethodViews.Count; i++)
+            {
+                if (i != indexToNotDisable)
+                {
+                    _generationMethodViews[i].DisableDraw();
+                }
             }
         }
 

@@ -33,7 +33,9 @@ namespace MonsterAdventure.Generation
         {
             float actualSample = 0;
 
-            for (int i = 0; i < GetGroupingData().groupingValues.Count; i++)
+            int i = 0;
+
+            for (i = 0; i < GetGroupingData().groupingValues.Count; i++)
             {
                 actualSample += GetGroupingData().groupingValues[i].offset;
 
@@ -41,8 +43,7 @@ namespace MonsterAdventure.Generation
                     return i;
             }
 
-            // impossible to reach normaly
-            return -1;
+            return i - 1;
         }
 
         private GroupingData GetGroupingData()
@@ -52,6 +53,11 @@ namespace MonsterAdventure.Generation
 
         public Color GetColor(int index)
         {
+            if (index < 0 || index >= GetGroupingData().groupingValues.Count)
+            {
+                Debug.Log("index : " + index);
+            }
+
             return GetGroupingData().groupingValues[index].color;
         }
     }
