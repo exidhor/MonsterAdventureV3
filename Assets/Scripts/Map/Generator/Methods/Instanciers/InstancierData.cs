@@ -12,21 +12,38 @@ namespace MonsterAdventure.Generation
 
         public List<InstancierValue> InstancierValues;
 
+        private Dictionary<int, InstancierValue> _sortedInstancierValues;
+
         private Map _map;
+        private PoolAllocatorTable _poolAllocatorTable;
 
         protected override void AwakeContent()
         {
-            // nothing
+            _sortedInstancierValues = new Dictionary<int, InstancierValue>();
+
+            for (int i = 0; i < InstancierValues.Count; i++)
+            {
+                _sortedInstancierValues.Add(InstancierValues[i].Value, 
+                    InstancierValues[i]);
+            }
         }
 
         protected override void StartContent()
         {
             _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
+
+            _poolAllocatorTable =
+                GameObject.FindGameObjectWithTag("PoolAllocatorTable").GetComponent<PoolAllocatorTable>();
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
-            return new InstancierMethod(this, generationTable, _map.SectorManager);
+            return new InstancierMethod(this, generationTable, _map.SectorManager, _poolAllocatorTable);
+        }
+
+        public Dictionary<int, InstancierValue> GetDictionary()
+        {
+            return _sortedInstancierValues;
         }
     }
 }

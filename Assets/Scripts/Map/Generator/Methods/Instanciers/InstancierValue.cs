@@ -11,5 +11,8 @@ namespace MonsterAdventure.Generation
     {
         public int Value;
         public GameObject Prefab;
+        public uint PoolSize;
+        public bool IsStatic;
+        public uint ExpandPoolSize;
     }
 }

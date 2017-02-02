@@ -39,7 +39,7 @@ namespace MonsterAdventure.Editor
         {
 #if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;  // VSync must be disabled
-            Application.targetFrameRate = 15;
+            //Application.targetFrameRate = 15;
 #endif
         }
 

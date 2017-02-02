@@ -1,19 +1,29 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.VR;
 
 namespace MonsterAdventure
 {
     public class Sector : MonoBehaviour
     {
+        public Rect Bounds
+        {
+            get { return _bounds; }
+        }
+
+        public List<TracedObject> TracedObjects;
+
         private Rect _bounds;
 
         private Coords _coords;
 
-        private List<TracedObject> _tracedObjects;
+        private bool _isVisible;
+
+        private IEnumerator _coroutine;
 
         public void Construct(Rect bounds, Coords coords)
         {
@@ -23,6 +33,98 @@ namespace MonsterAdventure
             _coords = coords;
 
             name = "Sector (" + coords.abs + ", " + coords.ord + ")";
+
+            TracedObjects = new List<TracedObject>();
+        }
+
+        public void AddTracedObject(TracedObject tracedObject)
+        {
+            TracedObjects.Add(tracedObject);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawWireCube(_bounds.center, _bounds.size);
+        }
+
+        public void SetIsVisible(bool isVisible)
+        {
+            if (_isVisible != isVisible)
+            {
+                _isVisible = isVisible;
+
+                if (isVisible)
+                {
+                    _coroutine = EnableTracedObjects();
+                    StartCoroutine(_coroutine);
+                }
+                else
+                {
+                    _coroutine = DisableTracedObjects();
+                    StartCoroutine(_coroutine);
+                }
+            }
+        }
+
+        private IEnumerator EnableTracedObjects()
+        {
+            int instanciationPerFrame = TracedObjects.Count / 5;
+            int currentInstanciation = 0;
+
+            for (int i = 0; i < TracedObjects.Count; i++)
+            {
+                TracedObjects[i].Instanciate();
+
+                currentInstanciation++;
+
+                if(currentInstanciation >= instanciationPerFrame)
+                {
+                    currentInstanciation = 0;
+                    yield return null;
+                }
+            }
+        }
+
+        private IEnumerator DisableTracedObjects()
+        {
+            int releasePerFrame = TracedObjects.Count / 5;
+            int currentRelease = 0;
+
+            for (int i = 0; i < TracedObjects.Count; i++)
+            {
+                TracedObjects[i].Release();
+
+                currentRelease++;
+
+                if (currentRelease >= releasePerFrame)
+                {
+                    currentRelease = 0;
+                    yield return null;
+                }
+            }
+        }
+
+        /*
+        private void EnableTracedObjects()
+        {
+            for (int i = 0; i < _tracedObjects.Count; i++)
+            {
+                _tracedObjects[i].Instanciate();
+            }
+        }
+
+        private void DisableTracedObjects()
+        {
+            for (int i = 0; i < _tracedObjects.Count; i++)
+            {
+                _tracedObjects[i].Release();
+            }
+        }*/
+
+        public Coords GetCoords()
+        {
+            return _coords;
         }
 
         /*

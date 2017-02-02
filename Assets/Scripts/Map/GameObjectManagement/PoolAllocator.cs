@@ -53,6 +53,8 @@ namespace MonsterAdventure
                 if (!Resources[i].IsUsed)
                 {
                     Resources[i].IsUsed = true;
+                    Resources[i].GameObject.SetActive(true);
+
                     return Resources[i].GameObject;
                 }
             }
@@ -61,22 +63,28 @@ namespace MonsterAdventure
             ExpandSize(_expandSize);
 
             Resources[i].IsUsed = true;
+            Resources[i].GameObject.SetActive(true);
 
             return Resources[i].GameObject;
         }
 
-        public void ReleaseResource(GameObject gameObject)
+        public void ReleaseResource(ref GameObject gameObjectToRelease)
         {
             for (int i = 0; i < Resources.Count; i++)
             {
-                if (Resources[i].GameObject == gameObject)
+                if (Resources[i].GameObject == gameObjectToRelease)
                 {
                     Resources[i].IsUsed = false;
+                    gameObjectToRelease.SetActive(false);
+                    gameObjectToRelease = null;
+                    return;
                 }
             }
 
             Debug.Log("Try to destroy " + gameObject.ToString() 
                 + " but it impossible to find it.");
+
+            gameObjectToRelease = null;
         }
 
         private Resource CreateResource()

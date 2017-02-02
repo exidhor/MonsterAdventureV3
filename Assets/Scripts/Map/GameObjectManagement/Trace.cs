@@ -6,9 +6,15 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
+    [Serializable]
     public class Trace
     {
         public int InstanceID;
         public Vector2 Position;
+
+        public Trace(int instanceID)
+        {
+            InstanceID = instanceID;
+        }
     }
 }

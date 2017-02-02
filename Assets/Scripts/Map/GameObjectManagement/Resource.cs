@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
+    [Serializable]
     public class Resource
     {
         public GameObject GameObject;

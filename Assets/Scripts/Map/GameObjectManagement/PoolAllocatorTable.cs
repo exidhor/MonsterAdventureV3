@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonsterAdventure.Generation;
 using UnityEngine;
 
 namespace MonsterAdventure
 {
     public class PoolAllocatorTable : MonoBehaviour
     {
-        private PoolAllocator Prefab;
+        public PoolAllocator Prefab;
 
         private Dictionary<int, PoolAllocator> _table;
 
@@ -17,9 +18,20 @@ namespace MonsterAdventure
             _table = new Dictionary<int, PoolAllocator>();
         }
 
-        public void AddPoolAllocator(GameObject model, bool isStatic, uint expandSize = 1)
+        public void AddPoolAllocator(GameObject model, uint poolSize, bool isStatic, uint expandSize = 1)
         {
-            _table.Add(model.GetInstanceID(), InstanciatePoolAllocator(model, isStatic, expandSize));
+            PoolAllocator newPool = InstanciatePoolAllocator(model, isStatic, expandSize);
+            newPool.SetSize(poolSize);
+
+            _table.Add(model.GetInstanceID(), newPool);
+        }
+
+        public void AddPoolAllocator(InstancierValue instancierValue)
+        {
+            AddPoolAllocator(instancierValue.Prefab, 
+                instancierValue.PoolSize, 
+                instancierValue.IsStatic, 
+                instancierValue.ExpandPoolSize);
         }
 
         public PoolAllocator GetPoolAllocator(int instanceID)
@@ -32,6 +44,7 @@ namespace MonsterAdventure
             return GetPoolAllocator(trace.InstanceID);
         }
 
+        /*
         public void InstanciateTrace(TracedObject tracedObject)
         {
             if (tracedObject.IsInstanciated)
@@ -39,8 +52,9 @@ namespace MonsterAdventure
                 Debug.Log("Try to instanciate " + tracedObject + " but the object is already instanciated.");
             }
 
-            GameObject newGameObject = GetPoolAllocator(tracedObject.Trace).GetFreeResource();
-            tracedObject.Instanciate(newGameObject);
+            PoolAllocator poolAllocator = GetPoolAllocator(tracedObject.Trace);
+
+            tracedObject.Instanciate(poolAllocator);
         }
 
         public void ReleaseGameObject(TracedObject tracedObject)
@@ -52,7 +66,7 @@ namespace MonsterAdventure
 
             GetPoolAllocator(tracedObject.Trace).ReleaseResource(tracedObject.GameObject);
             tracedObject.Release();
-        }
+        }*/
 
         private PoolAllocator InstanciatePoolAllocator(GameObject model, bool isStatic, uint expandSize)
         {
@@ -62,6 +76,14 @@ namespace MonsterAdventure
             poolAllocator.Construct(model, isStatic, expandSize);
 
             return poolAllocator;
+        }
+
+        public TracedObject GetTracedObject(InstancierValue instancierValue)
+        {
+            PoolAllocator poolAllocator = GetPoolAllocator(instancierValue.Prefab.GetInstanceID());
+            Trace trace = new Trace(instancierValue.Prefab.GetInstanceID());
+
+            return new TracedObject(trace, poolAllocator);
         }
     }
 }

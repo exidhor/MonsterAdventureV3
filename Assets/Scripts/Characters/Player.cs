@@ -11,7 +11,6 @@ namespace MonsterAdventure
         protected override void Start()
         {
             base.Start();
-
         }
 
         protected override void AttemptMove<T>(int xDir, int yDir)

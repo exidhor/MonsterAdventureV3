@@ -15,6 +15,7 @@ namespace MonsterAdventure
         public Sector sectorPrefab;
 
         [Range(0, 10)] public uint splitSectorLevel;
+        public uint size;
         [Range(0, 10)] public uint splitTileLevel;
 
 
@@ -44,8 +45,14 @@ namespace MonsterAdventure
         private TileManager _tileManager;
         private SectorManager _sectorManager;
         private RandomGenerator _randomGenerator;
+        private MovableGrid _movableGrid;
 
         private Vector2 _mapOffset;
+
+        private void Start()
+        {
+            // nothing
+        }
 
         public void Construct(RandomGenerator randomGenerator)
         {
@@ -64,15 +71,23 @@ namespace MonsterAdventure
             float offset = -lineSize * sectorSize / 2;
             Vector2 mapOffset = new Vector2(offset, offset);
 
+            _sectorManager.Construct(splitSectorLevel, (int)size, sectorPrefab);
+
+            /*
             _sectorManager.ConstructSectorPart(splitSectorLevel,
                 lineSize,
                 sectorSize,
                 mapOffset,
                 sectorPrefab);
 
+            */
+
             //_sectorManager.ConstructTilePart(tileCount, tilePrefab, tileSize);
 
             generator.Construct();
+
+            _movableGrid = GameObject.FindGameObjectWithTag("MovableGrid").GetComponent<MovableGrid>();
+            _movableGrid.Construct(_sectorManager);
         }
 
         private void CreateManagers()

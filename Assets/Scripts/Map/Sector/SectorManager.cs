@@ -23,71 +23,83 @@ namespace MonsterAdventure
             get { return _sectorSize; }
         }
 
+        public float MapSize
+        {
+            get { return _mapSize; }
+        }
+
+        public float MapOffset
+        {
+            get { return _mapOffset; }
+        }
+
         private bool _isInitialized;
 
         private Sector[,] _sectors;
         private float _sectorSize;
         private uint _splitLevel;
+        private int _mapSize;
+        private float _mapOffset;
 
-        public void Construct(uint splitSectorLevel, 
-            uint splitTileLevel, 
-            float sectorSize,
-            float tileSize, 
-            Sector sectorPrefab,
-            Tile tilePrefab)
-        {
-            _sectorSize = sectorSize;
-
-            int lineSize = (int)Math.Pow(2, splitSectorLevel);
-            uint tileCount = (uint) Math.Pow(2, splitTileLevel); 
-
-            _sectors = new Sector[lineSize, lineSize];
-
-            float offset = -lineSize* _sectorSize / 2;
-            Vector2 mapOffset = new Vector2(offset, offset);
-
-            for (int i = 0; i < _sectors.GetLength(0); i++)
-            {
-                for (int j = 0; j < _sectors.GetLength(1); j++)
-                {
-                    _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
-                    //_sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
-                }
-            }
-        }
-
-        public void ConstructSectorPart(uint splitSectorLevel,
-            uint lineSize,
-            float sectorSize,
-            Vector2 mapOffset,
+        public void Construct(uint splitSectorLevel,  
+            int mapSize,
             Sector sectorPrefab)
         {
             _splitLevel = splitSectorLevel;
-            _sectorSize = sectorSize;
+            _mapSize = mapSize;
+
+            int lineSize = (int)Math.Pow(2, _splitLevel);
+
+            _sectorSize = mapSize / (float)lineSize;
 
             _sectors = new Sector[lineSize, lineSize];
 
-            /*
+            _mapOffset = -lineSize * _sectorSize / 2;
+            Vector2 mapOffset = new Vector2(_mapOffset, _mapOffset);
+
             for (int i = 0; i < _sectors.GetLength(0); i++)
             {
                 for (int j = 0; j < _sectors.GetLength(1); j++)
                 {
                     _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
                 }
-            }*/
+            }
         }
 
+
+
         /*
-        public void ConstructTilePart(uint tileCount, Tile tilePrefab, float tileSize)
+public void ConstructSectorPart(uint splitSectorLevel,
+    uint lineSize,
+    float sectorSize,
+    Vector2 mapOffset,
+    Sector sectorPrefab)
+{
+    _splitLevel = splitSectorLevel;
+    _sectorSize = sectorSize;
+
+    _sectors = new Sector[lineSize, lineSize];
+
+    for (int i = 0; i < _sectors.GetLength(0); i++)
+    {
+        for (int j = 0; j < _sectors.GetLength(1); j++)
         {
-            for (int i = 0; i < _sectors.GetLength(0); i++)
-            {
-                for (int j = 0; j < _sectors.GetLength(1); j++)
-                {
-                    _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
-                }
-            }
-        }*/
+            _sectors[i, j] = InstantiateSector(new Coords(i, j), mapOffset, sectorPrefab);
+        }
+    }
+}
+
+
+public void ConstructTilePart(uint tileCount, Tile tilePrefab, float tileSize)
+{
+    for (int i = 0; i < _sectors.GetLength(0); i++)
+    {
+        for (int j = 0; j < _sectors.GetLength(1); j++)
+        {
+            _sectors[i, j].ConstructTile(tileCount, tilePrefab, tileSize);
+        }
+    }
+}*/
 
         private Sector InstantiateSector(Coords coords, Vector2 mapOffset, Sector sectorPrefab)
         {
@@ -123,6 +135,43 @@ namespace MonsterAdventure
         public Sector Get(int x, int y)
         {
             return _sectors[x, y];
+        }
+
+        public Sector Get(Coords coords)
+        {
+            return _sectors[coords.abs, coords.ord];
+        }
+
+        public void AddTracedObjectToSector(TracedObject tracedObject, Vector2 objectSize = new Vector2())
+        {
+            GetSectorFromPosition(tracedObject.Position, objectSize).AddTracedObject(tracedObject);
+        }
+
+        public Coords GetCoordsFromPosition(Vector2 position, Vector2 objectSize = new Vector2())
+        {
+            // find the good sector
+            Coords coords = new Coords();
+
+            coords.abs = (int)((position.x - _mapOffset - objectSize.x) / _sectorSize);
+            coords.ord = (int)((position.y - _mapOffset - objectSize.y) / _sectorSize);
+
+            return coords;
+        }
+
+        public Sector GetSectorFromPosition(Vector2 position, Vector2 objectSize)
+        {
+            return Get(GetCoordsFromPosition(position, objectSize));
+        }
+
+        public void DisableEverySectors()
+        {
+            for (int i = 0; i < _sectors.GetLength(0); i++)
+            {
+                for (int j = 0; j < _sectors.GetLength(1); j++)
+                {
+                    _sectors[i, j].SetIsVisible(false);
+                }
+            }
         }
     }
 }
