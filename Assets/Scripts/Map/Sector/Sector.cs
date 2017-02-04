@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 namespace MonsterAdventure
@@ -69,12 +68,12 @@ namespace MonsterAdventure
 
         private IEnumerator EnableTracedObjects()
         {
-            int instanciationPerFrame = TracedObjects.Count / 5;
+            int instanciationPerFrame = TracedObjects.Count / 30;
             int currentInstanciation = 0;
 
             for (int i = 0; i < TracedObjects.Count; i++)
             {
-                TracedObjects[i].Instanciate();
+                TracedObjects[i].Instantiate();
 
                 currentInstanciation++;
 
@@ -88,7 +87,7 @@ namespace MonsterAdventure
 
         private IEnumerator DisableTracedObjects()
         {
-            int releasePerFrame = TracedObjects.Count / 5;
+            int releasePerFrame = TracedObjects.Count / 30;
             int currentRelease = 0;
 
             for (int i = 0; i < TracedObjects.Count; i++)

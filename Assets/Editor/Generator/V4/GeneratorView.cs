@@ -183,16 +183,6 @@ namespace MonsterAdventure.Editor
             return null;
         }
 
-        public TileManager GetTileManager()
-        {
-            if (_map != null)
-            {
-                return _map.TileManager;
-            }
-
-            return null;
-        }
-
         public Generator GetGenerator()
         {
             return _generator;

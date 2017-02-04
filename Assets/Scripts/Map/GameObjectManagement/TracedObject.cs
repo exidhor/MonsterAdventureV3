@@ -9,13 +9,13 @@ namespace MonsterAdventure
     [Serializable]
     public class TracedObject
     {
-        public GameObject GameObject;
+        public PoolObject PoolObject;
 
         public Trace Trace;
 
         public bool IsInstanciated
         {
-            get { return GameObject != null; }
+            get { return PoolObject.GameObject != null; }
         }
 
         public Vector2 Position
@@ -29,29 +29,26 @@ namespace MonsterAdventure
         public TracedObject(Trace trace, PoolAllocator poolAllocator)
         {
             Trace = trace;
-            GameObject = null;
+            PoolObject = new PoolObject();
             _poolAllocator = poolAllocator;
-
-            // tmp 
-            //Instanciate();
         }
 
-        public void Instanciate()
+        public void Instantiate()
         {
-            GameObject = _poolAllocator.GetFreeResource();
-            GameObject.transform.position = Position;
+            _poolAllocator.GetFreeResource(ref PoolObject);
+            PoolObject.GameObject.transform.position = Position;
         }
 
         public void Release()
         {
-            _poolAllocator.ReleaseResource(ref GameObject);
+            _poolAllocator.ReleaseResource(ref PoolObject);
         }
 
         public override string ToString()
         {
             if (IsInstanciated)
             {
-                return "TracedObject : [name : " + GameObject.name + " ] [ instanceId : "
+                return "TracedObject : [name : " + PoolObject.GameObject.name + " ] [ instanceId : "
                        + Trace.InstanceID + " ] [ position : " + Trace.Position + " ]";
             }
 
@@ -65,7 +62,7 @@ namespace MonsterAdventure
 
             if (IsInstanciated)
             {
-                GameObject.transform.position = position;
+                PoolObject.GameObject.transform.position = position;
             }
         }
     }

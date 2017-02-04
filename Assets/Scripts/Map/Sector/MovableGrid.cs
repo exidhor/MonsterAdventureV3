@@ -15,9 +15,7 @@ namespace MonsterAdventure
 
     public class MovableGrid : MonoBehaviour
     {
-        public Text text;
-
-        public bool isInitialized;
+        public bool isInitialized = false;
 
         private SectorManager _sectorManager;
         private Sector[,] _sectors;
@@ -51,18 +49,18 @@ namespace MonsterAdventure
             _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
             _sectorManager = sectorManager;
-
-            isInitialized = true;
-
+            
             Coords coords = _sectorManager.GetCoordsFromPosition(_player.transform.position);
 
             SetPosition(coords);
+
+            isInitialized = true;
         }
 
 
         private void ComputeBox()
         {
-            _changementBox.size = CurrentSector.Bounds.size*2f;
+            _changementBox.size = CurrentSector.Bounds.size*1.5f;
             _changementBox.center = CurrentSector.Bounds.center;
 
             _limitsBox.size = CurrentSector.Bounds.size*3f;
@@ -75,14 +73,12 @@ namespace MonsterAdventure
 
             Coords newCoords = _sectorManager.GetCoordsFromPosition(playerPosition);
 
-            ActualizeGrid(newCoords, playerPosition);
-
-            text.text = "Coords (" + newCoords.abs + ", " + newCoords.ord + ")";
+            ActualizeGrid(newCoords, playerPosition); 
         }
 
         void OnDrawGizmosSelected()
         {
-            if (CurrentSector != null) // means that the object is constructed
+            if (CurrentSector != null && isInitialized) // means that the object is constructed
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(CurrentSector.Bounds.center, CurrentSector.Bounds.size);
