@@ -41,12 +41,16 @@ namespace MonsterAdventure
         private int _mapSize;
         private float _mapOffset;
 
+        private PoolAllocator _poolAllocator;
+
         public void Construct(uint splitSectorLevel,  
             int mapSize,
             Sector sectorPrefab)
         {
             _splitLevel = splitSectorLevel;
             _mapSize = mapSize;
+
+            _poolAllocator = GameObject.FindGameObjectWithTag("PoolAllocator").GetComponent<PoolAllocator>();
 
             int lineSize = (int)Math.Pow(2, _splitLevel);
 
@@ -108,7 +112,7 @@ public void ConstructTilePart(uint tileCount, Tile tilePrefab, float tileSize)
 
             Rect sectorBounds = ComputeSectorBounds(coords, mapOffset);
 
-            sector.Construct(sectorBounds, coords);
+            sector.Construct(sectorBounds, coords, _poolAllocator);
 
             return sector;
         }

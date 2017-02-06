@@ -54,6 +54,8 @@ namespace MonsterAdventure
 
             SetPosition(coords);
 
+            ComputeBox();
+
             isInitialized = true;
         }
 

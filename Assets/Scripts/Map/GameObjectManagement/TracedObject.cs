@@ -9,13 +9,13 @@ namespace MonsterAdventure
     [Serializable]
     public class TracedObject
     {
-        public PoolObject PoolObject;
+        public PooledObject PooledObject;
 
         public Trace Trace;
 
         public bool IsInstanciated
         {
-            get { return PoolObject.GameObject != null; }
+            get { return PooledObject.GameObject != null; }
         }
 
         public Vector2 Position
@@ -24,31 +24,31 @@ namespace MonsterAdventure
             set { SetPosition(value); }
         }
 
-        private PoolAllocator _poolAllocator;
+        private Pool _pool;
 
-        public TracedObject(Trace trace, PoolAllocator poolAllocator)
+        public TracedObject(Trace trace, Pool pool)
         {
             Trace = trace;
-            PoolObject = new PoolObject();
-            _poolAllocator = poolAllocator;
+            PooledObject = new PooledObject();
+            _pool = pool;
         }
 
         public void Instantiate()
         {
-            _poolAllocator.GetFreeResource(ref PoolObject);
-            PoolObject.GameObject.transform.position = Position;
+            _pool.GetFreeResource(ref PooledObject);
+            PooledObject.GameObject.transform.position = Position;
         }
 
         public void Release()
         {
-            _poolAllocator.ReleaseResource(ref PoolObject);
+            _pool.ReleaseResource(ref PooledObject);
         }
 
         public override string ToString()
         {
             if (IsInstanciated)
             {
-                return "TracedObject : [name : " + PoolObject.GameObject.name + " ] [ instanceId : "
+                return "TracedObject : [name : " + PooledObject.GameObject.name + " ] [ instanceId : "
                        + Trace.InstanceID + " ] [ position : " + Trace.Position + " ]";
             }
 
@@ -62,7 +62,7 @@ namespace MonsterAdventure
 
             if (IsInstanciated)
             {
-                PoolObject.GameObject.transform.position = position;
+                PooledObject.GameObject.transform.position = position;
             }
         }
     }

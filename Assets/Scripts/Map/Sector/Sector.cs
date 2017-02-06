@@ -22,13 +22,15 @@ namespace MonsterAdventure
 
         private bool _isVisible;
 
-        private IEnumerator _coroutine;
+        private PoolAllocator _poolAllocator;
+        //private IEnumerator _coroutine;
 
-        public void Construct(Rect bounds, Coords coords)
+        public void Construct(Rect bounds, Coords coords, PoolAllocator poolAllocator)
         {
             _bounds = bounds;
             transform.position = _bounds.position;
 
+            _poolAllocator = poolAllocator;
             _coords = coords;
 
             name = "Sector (" + coords.abs + ", " + coords.ord + ")";
@@ -55,17 +57,20 @@ namespace MonsterAdventure
 
                 if (isVisible)
                 {
-                    _coroutine = EnableTracedObjects();
-                    StartCoroutine(_coroutine);
+                    //_coroutine = EnableTracedObjects();
+                    //StartCoroutine(_coroutine);
+                    EnableTracedObjects();
                 }
                 else
                 {
-                    _coroutine = DisableTracedObjects();
-                    StartCoroutine(_coroutine);
+                    //_coroutine = DisableTracedObjects();
+                    //StartCoroutine(_coroutine);
+                    DisableTracedObjects();
                 }
             }
         }
-
+    
+        /*
         private IEnumerator EnableTracedObjects()
         {
             int instanciationPerFrame = TracedObjects.Count / 30;
@@ -102,24 +107,19 @@ namespace MonsterAdventure
                     yield return null;
                 }
             }
-        }
-
-        /*
+        }*/
+        
         private void EnableTracedObjects()
         {
-            for (int i = 0; i < _tracedObjects.Count; i++)
-            {
-                _tracedObjects[i].Instanciate();
-            }
+            //Debug.Log("Instanciate Sector " + _coords);
+            _poolAllocator.AddPoolRequest(TracedObjects, PoolRequestAction.Allocate);
         }
 
         private void DisableTracedObjects()
         {
-            for (int i = 0; i < _tracedObjects.Count; i++)
-            {
-                _tracedObjects[i].Release();
-            }
-        }*/
+            //Debug.Log("Release Sector " + _coords);
+            _poolAllocator.AddPoolRequest(TracedObjects, PoolRequestAction.Free);
+        }
 
         public Coords GetCoords()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -8,128 +9,161 @@ namespace MonsterAdventure
 {
     public class PoolAllocator : MonoBehaviour
     {
-        public List<Resource> Resources;
+        public uint MinAllocations;
+        public uint MaxSplitAllocations;
+        public uint PoolRequestCapacity;
 
-        private GameObject _model;
-        private bool _isStatic;
-        private int _expandSize;
+        public Queue<PoolRequest> ToResolve;
+        private int _numberOfActionToResolve;
+        private int _indexInCurrentRequest;
 
-        private int _lastFreeResource;
+        private IEnumerator _coroutine;
+        private bool _continueCoroutine;
 
-        public void Construct(GameObject model, bool isStatic, uint expandSize)
+        private void Awake()
         {
-            _model = model;
-            _isStatic = isStatic;
-            _expandSize = (int) expandSize;
-
-            name = "PoolAllocator (" + _model.name + ")";
-
-            Resources = new List<Resource>();
-
-            _lastFreeResource = 0;
+            // set the capacity
+            ToResolve = new Queue<PoolRequest>((int) PoolRequestCapacity);
         }
 
-        public void SetSize(uint newSize)
+        private void Start()
         {
-            if (newSize < Resources.Count)
+            _continueCoroutine = true;
+            _coroutine = CoroutineAllocation();
+
+            _indexInCurrentRequest = 0;
+
+            StartCoroutine(_coroutine);
+        }
+
+        public void AddPoolRequest(List<TracedObject> tracedObjects,
+            PoolRequestAction action)
+        {
+            if (ToResolve.Count >= PoolRequestCapacity)
             {
-                Resources.RemoveRange((int) newSize - 1, Resources.Count - (int) newSize);
+                Debug.Log("To many request pool stored !");
             }
             else
             {
-                Resources.Capacity = (int) newSize;
-
-                ExpandSize((int) newSize - Resources.Count);
+                ToResolve.Enqueue(new PoolRequest(tracedObjects, action));
+                _numberOfActionToResolve += tracedObjects.Count;
             }
         }
 
-        private void ExpandSize(int numberOfElementsToAdd)
+        private void StopAllocationCoroutine()
         {
-            for (int i = 0; i < numberOfElementsToAdd; i++)
+            _continueCoroutine = false;
+        }
+
+        private IEnumerator CoroutineAllocation()
+        {
+            while (_continueCoroutine)
             {
-                Resources.Add(CreateResource());
+                Resolve();
+                yield return null;
             }
         }
 
-        public void GetFreeResource(ref PoolObject poolObjectDest)
+        private void Resolve()
         {
-            int i;
-            for (i = _lastFreeResource; i < Resources.Count; i++)
+            int currentNumberOfResolvedAction = 0;
+            int numberOfActionToResolve = GetNumberActionToResolve();
+
+            while (ToResolve.Count > 0 && currentNumberOfResolvedAction < numberOfActionToResolve)
             {
-                if (!Resources[i].IsUsed)
+                PoolRequest currentPoolRequest = ToResolve.Peek();
+
+                int numberOfActionMissing = currentPoolRequest.TracedObjects.Count - _indexInCurrentRequest;
+
+                if (numberOfActionMissing + currentNumberOfResolvedAction <= numberOfActionToResolve)
                 {
-                    SetResourceState(true, i);
+                    // resolve the action
+                    ResolvePoolRequest(currentPoolRequest, _indexInCurrentRequest, currentPoolRequest.TracedObjects.Count - 1);
 
-                    poolObjectDest.GameObject = Resources[i].GameObject;
-                    poolObjectDest.PoolInstanceId = i;
+                    // actualize counters
+                    _indexInCurrentRequest = 0;
+                    currentNumberOfResolvedAction += currentPoolRequest.TracedObjects.Count;
 
-                    return;
-                }
-            }
-
-            // we need to create new Resources
-            ExpandSize(_expandSize);
-
-            SetResourceState(true, i);
-
-            poolObjectDest.GameObject = Resources[i].GameObject;
-            poolObjectDest.PoolInstanceId = i;
-        }
-
-        private void SetResourceState(bool isUsed, int index)
-        {
-            if (isUsed)
-            {
-                Resources[index].IsUsed = true;
-                Resources[index].GameObject.SetActive(true);
-
-                _lastFreeResource = index + 1;
-            }
-            else
-            {
-                Resources[index].IsUsed = false;
-                Resources[index].GameObject.SetActive(false);
-
-                if (_lastFreeResource > index)
-                {
-                    _lastFreeResource = index;
-                }
-            }
-        }
-
-        public void ReleaseResource(ref PoolObject poolObject)
-        {
-            if (Resources[poolObject.PoolInstanceId].GameObject == poolObject.GameObject)
-            {
-                if (Resources[poolObject.PoolInstanceId].IsUsed)
-                {
-                    SetResourceState(false, poolObject.PoolInstanceId);
-
-                    poolObject.GameObject = null;
-                    poolObject.PoolInstanceId = -1;
+                    // delete the request
+                    ToResolve.Dequeue();
                 }
                 else
                 {
-                    Debug.LogError("Try to destroy an unused object in the " + name + ".\n"
-                        + "It may be an error in the poolInstanceId (" + poolObject.PoolInstanceId + ")");
+                    // compute the number of actions
+                    numberOfActionMissing = numberOfActionToResolve - currentNumberOfResolvedAction;
+                    int endIndex = numberOfActionMissing + _indexInCurrentRequest;
+
+                    // resolve the action
+                    ResolvePoolRequest(currentPoolRequest, _indexInCurrentRequest, endIndex);
+
+                    // actualize counters
+                    _indexInCurrentRequest = endIndex + 1;
+                    currentNumberOfResolvedAction += numberOfActionMissing;
+
+                    // actualize the request
+                    //currentPoolRequest.TracedObjects.RemoveRange(0, endIndex);
                 }
             }
-            else
+
+            _numberOfActionToResolve -= currentNumberOfResolvedAction;
+
+        }
+
+        private void ResolvePoolRequest(PoolRequest poolRequest)
+        {
+            ResolvePoolRequest(poolRequest, 0, poolRequest.TracedObjects.Count);
+        }
+
+        private void ResolvePoolRequest(PoolRequest poolRequest, int startIndex, int endIndex)
+        {
+            switch (poolRequest.Action)
             {
-                Debug.LogError("Try to destroy a different object in the " + name + ".\n"
-                               + "It may be an error in the poolInstanceId (" + poolObject.PoolInstanceId + ")");
+                case PoolRequestAction.Allocate:
+                        InstanciateTracedObjects(poolRequest.TracedObjects, startIndex, endIndex);
+                    break;
+
+                case PoolRequestAction.Free:
+                        ReleaseTracedObjects(poolRequest.TracedObjects, startIndex, endIndex);
+                    break;
             }
         }
 
-        private Resource CreateResource()
+        private void InstanciateTracedObjects(List<TracedObject> tracedObjects, int startIndex, int endIndex)
         {
-            GameObject newGameObject = Instantiate<GameObject>(_model);
-            newGameObject.transform.parent = this.gameObject.transform;
-            newGameObject.name = _model.name + " " + Resources.Count;
+            if (endIndex >= tracedObjects.Count)
+            {
+                Debug.Log("error on endIndex : " + endIndex + " >= Count : " + tracedObjects.Count);
+            }
 
-            newGameObject.SetActive(false);
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                tracedObjects[i].Instantiate();
+            }
+        }
 
-            return new Resource(newGameObject);
+        private void ReleaseTracedObjects(List<TracedObject> tracedObjects, int startIndex, int endIndex)
+        {
+            if (endIndex >= tracedObjects.Count)
+            {
+                Debug.Log("error on endIndex : " + endIndex + " >= Count : " + tracedObjects.Count);
+            }
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                tracedObjects[i].Release();
+            }
+        }
+
+        private int GetNumberActionToResolve()
+        {
+            int splitAction = (int)(_numberOfActionToResolve / (float)MaxSplitAllocations);
+
+            if (splitAction < MinAllocations)
+            {
+                return (int)MinAllocations;
+            }
+
+            return splitAction;
         }
     }
 }

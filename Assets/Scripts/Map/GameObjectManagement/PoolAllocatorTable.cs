@@ -9,18 +9,18 @@ namespace MonsterAdventure
 {
     public class PoolAllocatorTable : MonoBehaviour
     {
-        public PoolAllocator Prefab;
+        public Pool Prefab;
 
-        private Dictionary<int, PoolAllocator> _table;
+        private Dictionary<int, Pool> _table;
 
         private void Awake()
         {
-            _table = new Dictionary<int, PoolAllocator>();
+            _table = new Dictionary<int, Pool>();
         }
 
         public void AddPoolAllocator(GameObject model, uint poolSize, bool isStatic, uint expandSize = 1)
         {
-            PoolAllocator newPool = InstanciatePoolAllocator(model, isStatic, expandSize);
+            Pool newPool = InstanciatePoolAllocator(model, isStatic, expandSize);
             newPool.SetSize(poolSize);
 
             _table.Add(model.GetInstanceID(), newPool);
@@ -34,12 +34,12 @@ namespace MonsterAdventure
                 instancierValue.ExpandPoolSize);
         }
 
-        public PoolAllocator GetPoolAllocator(int instanceID)
+        public Pool GetPoolAllocator(int instanceID)
         {
             return _table[instanceID];
         }
 
-        public PoolAllocator GetPoolAllocator(Trace trace)
+        public Pool GetPoolAllocator(Trace trace)
         {
             return GetPoolAllocator(trace.InstanceID);
         }
@@ -68,22 +68,22 @@ namespace MonsterAdventure
             tracedObject.Release();
         }*/
 
-        private PoolAllocator InstanciatePoolAllocator(GameObject model, bool isStatic, uint expandSize)
+        private Pool InstanciatePoolAllocator(GameObject model, bool isStatic, uint expandSize)
         {
-            PoolAllocator poolAllocator = Instantiate<PoolAllocator>(Prefab);
-            poolAllocator.transform.parent = gameObject.transform;
+            Pool pool = Instantiate<Pool>(Prefab);
+            pool.transform.parent = gameObject.transform;
 
-            poolAllocator.Construct(model, isStatic, expandSize);
+            pool.Construct(model, isStatic, expandSize);
 
-            return poolAllocator;
+            return pool;
         }
 
         public TracedObject GetTracedObject(InstancierValue instancierValue)
         {
-            PoolAllocator poolAllocator = GetPoolAllocator(instancierValue.Prefab.GetInstanceID());
+            Pool pool = GetPoolAllocator(instancierValue.Prefab.GetInstanceID());
             Trace trace = new Trace(instancierValue.Prefab.GetInstanceID());
 
-            return new TracedObject(trace, poolAllocator);
+            return new TracedObject(trace, pool);
         }
     }
 }
