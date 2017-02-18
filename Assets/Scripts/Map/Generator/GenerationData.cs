@@ -46,6 +46,11 @@ namespace MonsterAdventure.Generation
             return _generationMethod;
         }
 
+        public GenerationGrid GetGrid()
+        {
+            return _generationMethod.GetGrid();
+        }
+
         public uint GetLevel()
         {
             return _generationMethod.GetLevel();

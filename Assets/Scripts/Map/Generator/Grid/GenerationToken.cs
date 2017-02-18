@@ -76,7 +76,7 @@ namespace MonsterAdventure.Generation
 
         public bool GetBoolValue()
         {
-            if (_value == 0f)
+            if (GetIntValue() == -1)
                 return false;
 
             return true;

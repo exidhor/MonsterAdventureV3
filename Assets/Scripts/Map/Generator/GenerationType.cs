@@ -14,6 +14,7 @@ namespace MonsterAdventure.Generation
         // Modifiers
         Grouping,
         Distance,
+        Splitter,
 
         // Blenders
         Blend,

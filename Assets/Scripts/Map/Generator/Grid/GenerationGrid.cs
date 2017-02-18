@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Debug = UnityEngine.Debug;
 
 namespace MonsterAdventure.Generation
 {
@@ -33,6 +35,8 @@ namespace MonsterAdventure.Generation
                     _tokens[x, y] = new GenerationToken();
                 }
             }
+
+            InitWith(-1);
         }
 
         public void InitWith(float value)
@@ -48,6 +52,12 @@ namespace MonsterAdventure.Generation
 
         public GenerationToken Get(int x, int y)
         {
+            if (x < 0 || y < 0
+                || x >= _tokens.GetLength(0) || y >= _tokens.GetLength(1))
+            {
+                Debug.LogWarning("Try to access at an invalid index (" + x + ", " + y + ")");
+            }
+
             return _tokens[x, y];
         }
 

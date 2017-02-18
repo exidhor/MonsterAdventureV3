@@ -8,7 +8,7 @@ namespace MonsterAdventure.Generation
 {
     public class InstancierData : GenerationData
     {
-        public GroupingData dataSource;
+        public GenerationData dataSource;
 
         public List<InstancierValue> InstancierValues;
 
@@ -30,14 +30,16 @@ namespace MonsterAdventure.Generation
 
         protected override void StartContent()
         {
-            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
 
-            _poolAllocatorTable =
-                GameObject.FindGameObjectWithTag("PoolAllocatorTable").GetComponent<PoolAllocatorTable>();
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
+            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
+
+            _poolAllocatorTable =
+                GameObject.FindGameObjectWithTag("PoolAllocatorTable").GetComponent<PoolAllocatorTable>();
+
             return new InstancierMethod(this, generationTable, _map.SectorManager, _poolAllocatorTable);
         }
 

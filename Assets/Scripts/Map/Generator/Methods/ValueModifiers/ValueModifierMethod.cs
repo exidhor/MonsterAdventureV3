@@ -5,9 +5,9 @@ using System.Text;
 
 namespace MonsterAdventure.Generation
 {
-    public abstract class ModifierMethod : GenerationMethod
+    public abstract class ValueModifierMethod : GenerationMethod
     {
-        public ModifierMethod(ModifierData data,
+        public ValueModifierMethod(ValueModifierData data,
             GenerationTable generationTable,
             GenerationType genererationType)
             : base(data, generationTable, genererationType, data.GetSource().GetLevel())
@@ -25,9 +25,9 @@ namespace MonsterAdventure.Generation
             return GetSourceData().GetGenerationMethod().GetGrid();
         }
 
-        private ModifierData GetModifierData()
+        private ValueModifierData GetModifierData()
         {
-            return (ModifierData) _generationData;
+            return (ValueModifierData) _generationData;
         }
     }
 }

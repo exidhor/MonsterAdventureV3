@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonsterAdventure.Generation
 {
-    public class DistanceData : ModifierData
+    public class DistanceData : ValueModifierData
     {
         public GroupingData dataSource;
 

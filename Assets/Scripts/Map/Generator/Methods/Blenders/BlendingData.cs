@@ -5,21 +5,29 @@ using System.Text;
 
 namespace MonsterAdventure.Generation
 {
-    public class BlendingData : GenerationData
+    public abstract class BlendingData : GenerationData
     {
-        protected override void AwakeContent()
+        public abstract GenerationData GetFirstSource();
+        public abstract GenerationData GetSecondSource();
+
+        public uint GetConstructionLevel()
         {
-            // todo
+            if (GetFirstSource().GetLevel() > GetSecondSource().GetLevel())
+            {
+                return GetFirstSource().GetLevel();
+            }
+
+            return GetSecondSource().GetLevel();
         }
 
-        protected override void StartContent()
+        public int GetSmallestGridNum()
         {
-            // todo
-        }
+            if (GetFirstSource().GetLevel() > GetSecondSource().GetLevel())
+            {
+                return 0;
+            }
 
-        protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
-        {
-            throw new NotImplementedException();
+            return 1;
         }
     }
 }

@@ -22,11 +22,13 @@ namespace MonsterAdventure.Generation
 
         protected override void StartContent()
         {
-            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
+
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
+            _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
+
             return new RandomSpread(this, generationTable);
         }
     }

@@ -5,10 +5,13 @@ using System.Text;
 
 namespace MonsterAdventure.Generation
 {
-    public class GroupingData : ModifierData
+    public class BooleanBlendingData : BlendingData
     {
-        public GenerationData dataSource;
-        public List<GroupingValue> groupingValues;
+        public float valueToSetWhenBoolIsTrue = 10f;
+
+        public GenerationData dataApplication;
+
+        public GenerationData dataApplicated;
 
         protected override void AwakeContent()
         {
@@ -22,12 +25,17 @@ namespace MonsterAdventure.Generation
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)
         {
-            return new Grouping(this, generationTable);
+            return new BooleanBlendingMethod(this, generationTable);
         }
 
-        public override GenerationData GetSource()
+        public override GenerationData GetFirstSource()
         {
-            return dataSource;
+            return dataApplication;
+        }
+
+        public override GenerationData GetSecondSource()
+        {
+            return dataApplicated;
         }
     }
 }

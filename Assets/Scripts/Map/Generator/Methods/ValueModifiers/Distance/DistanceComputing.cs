@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace MonsterAdventure.Generation
 {
-    public class DistanceComputing : ModifierMethod
+    public class DistanceComputing : ValueModifierMethod
     {
         private List<Dictionary<int, List<Coords>>> _sortedDistancesPerValues;
 

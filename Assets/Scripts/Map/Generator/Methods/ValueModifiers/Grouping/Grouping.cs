@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
-    public class Grouping : ModifierMethod
+    public class Grouping : ValueModifierMethod
     {
         public Grouping(GroupingData data, GenerationTable generationTable)
             : base(data, generationTable, GenerationType.Grouping)
@@ -31,11 +31,14 @@ namespace MonsterAdventure.Generation
 
         private int FindNewValueValue(float oldvalue)
         {
-            float actualSample = 0;
+            float actualSample = GetGroupingData().StartOffset;
 
-            int i = 0;
+            if (oldvalue < actualSample)
+            {
+                return -1;
+            }
 
-            for (i = 0; i < GetGroupingData().groupingValues.Count; i++)
+            for (int i = 0; i < GetGroupingData().groupingValues.Count; i++)
             {
                 actualSample += GetGroupingData().groupingValues[i].offset;
 
@@ -43,7 +46,7 @@ namespace MonsterAdventure.Generation
                     return i;
             }
 
-            return i - 1;
+            return -1;
         }
 
         private GroupingData GetGroupingData()
@@ -55,7 +58,10 @@ namespace MonsterAdventure.Generation
         {
             if (index < 0 || index >= GetGroupingData().groupingValues.Count)
             {
-                Debug.Log("index : " + index);
+                //Debug.Log("index : " + index);
+
+                // return the default color if the value is not groupped
+                return new Color(); 
             }
 
             return GetGroupingData().groupingValues[index].color;

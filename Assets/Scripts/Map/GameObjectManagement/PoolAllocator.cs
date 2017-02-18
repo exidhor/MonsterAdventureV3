@@ -9,6 +9,8 @@ namespace MonsterAdventure
 {
     public class PoolAllocator : MonoBehaviour
     {
+        public bool UseCoroutine;
+
         public uint MinAllocations;
         public uint MaxSplitAllocations;
         public uint PoolRequestCapacity;
@@ -33,7 +35,14 @@ namespace MonsterAdventure
 
             _indexInCurrentRequest = 0;
 
-            StartCoroutine(_coroutine);
+            if(UseCoroutine)
+                StartCoroutine(_coroutine);
+        }
+
+        private void Update()
+        {
+            if(!UseCoroutine)
+                Resolve();
         }
 
         public void AddPoolRequest(List<TracedObject> tracedObjects,
@@ -107,11 +116,6 @@ namespace MonsterAdventure
 
             _numberOfActionToResolve -= currentNumberOfResolvedAction;
 
-        }
-
-        private void ResolvePoolRequest(PoolRequest poolRequest)
-        {
-            ResolvePoolRequest(poolRequest, 0, poolRequest.TracedObjects.Count);
         }
 
         private void ResolvePoolRequest(PoolRequest poolRequest, int startIndex, int endIndex)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonsterAdventure.Generation
 {
-    public abstract class ModifierData : GenerationData
+    public abstract class GridModifierData : GenerationData
     {
         public abstract GenerationData GetSource();
     }
