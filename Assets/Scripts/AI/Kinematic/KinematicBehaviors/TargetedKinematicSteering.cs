@@ -2,25 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
     public abstract class TargetedKinematicSteering : KinematicSteering
     {
-        public Location Target;
+        public LocationComponent Target;
 
-        public TargetedKinematicSteering(float maxSpeed, Location target)
-            : base(maxSpeed)
+        protected virtual void Awake()
         {
-            Target = target;
+            Target = new LocationComponent();
+        } 
+
+        protected void __TargetedKinematicSteering__(float maxSpeed, Location target)
+        {
+            __KinematicSteering__(maxSpeed);
+
+            SetTargetLocation(target);
         }
 
         public void SetTargetLocation(Location location)
         {
-            Target = location;
+            Target.SetLocation(location);
         }
 
-        public Location GetTargetLocation()
+        public Vector2 GetTargetPosition()
+        {
+            return Target.GetPosition();
+        }
+
+        public LocationComponent GetTargetLocationComponent()
         {
             return Target;
         }

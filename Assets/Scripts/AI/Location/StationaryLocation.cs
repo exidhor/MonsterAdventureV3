@@ -33,7 +33,7 @@ namespace MonsterAdventure.AI
 
         public override LocationType GetLocationType()
         {
-            return LocationType.StationayLocation;
+            return LocationType.StationaryLocation;
         }
     }
 }

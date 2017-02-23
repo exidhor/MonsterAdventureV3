@@ -15,14 +15,19 @@ namespace MonsterAdventure.AI
 
         public SteeringOutput()
         {
-            Linear = Vector2.zero;
-            IsKinematic = true;
+            Reset();
         }
 
         public SteeringOutput(Vector2 linear, bool isKinematic)
         {
             Linear = linear;
             IsKinematic = isKinematic;
+        }
+
+        public void Reset()
+        {
+            Linear = Vector2.zero;
+            IsKinematic = true;
         }
     }
 }

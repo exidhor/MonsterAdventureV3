@@ -10,6 +10,11 @@ namespace MonsterAdventure.AI
     {
         private Transform _transform;
 
+        public TransformLocation(Transform transform)
+        {
+            _transform = transform;
+        }
+
         public override Vector2 GetPosition()
         {
             return _transform.position;

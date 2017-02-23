@@ -8,21 +8,29 @@ namespace MonsterAdventure.AI
 {
     public class KinematicSeek : TargetedKinematicSteering
     {
-        public KinematicSeek(float maxSpeed, Location target)
-            : base(maxSpeed, target)
+        public void __KinematicSeek__(float maxSpeed, Location target)
         {
-            // nothing
+            __TargetedKinematicSteering__(maxSpeed, target);
         }
 
-        public override void GiveSteering(ref SteeringOutput output, Kinematic character)
+        protected override void GiveSteering(ref SteeringOutput output, Kinematic character)
         {
+            //if (GetTargetLocation() == null)
+            //{
+            //    output.IsKinematic = true;
+            //    output.Linear = Vector2.zero;
+
+            //    return;
+            //}
+
             // First work out the direction
             output.IsKinematic = true;
-            output.Linear = GetTargetLocation().GetPosition();
+            output.Linear = GetTargetPosition();
             output.Linear -= character.GetPosition();
             
             // If there is no direction, do nothing
-            output.Linear = Vector2.ClampMagnitude(output.Linear, GetMaxSpeed());
+            output.Linear = MathHelper.GetKinematicMovement_MinCheck(output.Linear, GetMaxSpeed(), 0.01f);
+            //output.Linear = Vector2.ClampMagnitude(output.Linear, GetMaxSpeed());
         }
     }
 }

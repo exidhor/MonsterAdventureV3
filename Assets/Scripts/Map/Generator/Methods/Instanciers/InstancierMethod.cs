@@ -9,13 +9,21 @@ namespace MonsterAdventure.Generation
     public class InstancierMethod : GenerationMethod
     {
         private SectorManager _sectorManager;
-        private PoolAllocatorTable _poolAllocatorTable;
+        //private PoolTable _poolTable;
 
-        public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager, PoolAllocatorTable poolAllocatorTable)
+        /*public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager, PoolTable poolTable)
             : base(data, generationTable, GenerationType.Instancier, data.dataSource.GetLevel())
         {
             _sectorManager = sectorManager;
-            _poolAllocatorTable = poolAllocatorTable;
+            _poolTable = poolTable;
+
+            ComputeGeneration();
+        }*/
+
+        public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager)
+            : base(data, generationTable, GenerationType.Instancier, data.dataSource.GetLevel())
+        {
+            _sectorManager = sectorManager;
 
             ComputeGeneration();
         }
@@ -36,7 +44,8 @@ namespace MonsterAdventure.Generation
                         out instancierValue))
                     {
                         // create TracedObject
-                        TracedObject tracedObject = _poolAllocatorTable.GetTracedObject(instancierValue);
+                        //TracedObject tracedObject = _poolTable.GetTracedObject(instancierValue);
+                        TracedObject tracedObject = PoolTable.Instance.GetTracedObject(instancierValue);
 
                         tracedObject.Position = PositionFromGrid(i, j, sourceGrid);
 
@@ -52,7 +61,8 @@ namespace MonsterAdventure.Generation
 
             for (int i = 0; i < instancierValues.Count; i++)
             {
-                _poolAllocatorTable.AddPoolAllocator(instancierValues[i]);
+                //_poolTable.AddPool(instancierValues[i]);
+                PoolTable.Instance.AddPool(instancierValues[i]);
             }
         }
 

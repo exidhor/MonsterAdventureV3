@@ -57,7 +57,6 @@ namespace MonsterAdventure
 
             CreateManagers();
 
-            //float tileSize =  baseTileSprite.rect.width;
             float tileSize = 1f;
 
             float sectorSize = (float) Math.Pow(2, splitTileLevel)*tileSize;
@@ -69,17 +68,6 @@ namespace MonsterAdventure
             Vector2 mapOffset = new Vector2(offset, offset);
 
             _sectorManager.Construct(splitSectorLevel, (int) size, sectorPrefab);
-
-            /*
-            _sectorManager.ConstructSectorPart(splitSectorLevel,
-                lineSize,
-                sectorSize,
-                mapOffset,
-                sectorPrefab);
-
-            */
-
-            //_sectorManager.ConstructTilePart(tileCount, tilePrefab, tileSize);
 
             generator.Construct();
 

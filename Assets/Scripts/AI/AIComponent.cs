@@ -10,6 +10,7 @@ namespace MonsterAdventure.AI
     public class AIComponent : MonoBehaviour
     {
         public EBehavior Behavior = EBehavior.None;
+        private EBehavior _oldBehavior = EBehavior.None;    
         public SteeringOutput OutputBuffer;
 
         private Kinematic _kinematic;
@@ -22,38 +23,33 @@ namespace MonsterAdventure.AI
             _instanceIdInScene = GetInstanceID();
         }
 
-        private void OnEnable()
-        {
-            AITable.Instance.Register(this);
-        }
-
-        private void OnDisable()
-        {
-            if (AITable.NotModifiedInstance != null)
-            {
-                AITable.Instance.Unregister(this.GetInstanceID());
-            }
-        }
-
         private void Start()
         {
             _kinematic = GetComponent<Kinematic>();
 
             OutputBuffer = new SteeringOutput();
 
-            ConstructKinematicSteering();
+            _steering = null;
+
+            //ApplyKinematicSteering();
+        }
+
+        private void Update()
+        {
+            //ApplyKinematicSteering();
         }
 
         private void FixedUpdate()
         {
-            ConstructKinematicSteering();
+            //ApplyKinematicSteering();
 
             if (_steering != null)
             {
-                _steering.GiveSteering(ref OutputBuffer, _kinematic);
+                _steering.ConfigureSteeringOutput(ref OutputBuffer, _kinematic);
             }
 
-            _kinematic.Actualize(Time.fixedDeltaTime, OutputBuffer);
+            //_kinematic.Actualize(Time.fixedDeltaTime, OutputBuffer);
+            _kinematic.Actualize(OutputBuffer);
         }
 
         public int GetInstanceIdInScene()
@@ -61,28 +57,97 @@ namespace MonsterAdventure.AI
             return _instanceIdInScene;
         }
 
-        public void SetKinematicSteering(KinematicSteering kinematicSteering)
-        {
-            _steering = kinematicSteering;
-        }
+        //public void SetKinematicSteering(KinematicSteering kinematicSteering)
+        //{
+        //    _steering = kinematicSteering;
+        //}
 
-        public void ConstructKinematicSteering()
+        //public void ApplyKinematicSteering()
+        //{
+        //    if (Behavior != _oldBehavior)
+        //    {
+        //        FreeOldSteering();
+        //        ConfigureNewSteering();
+
+        //        _oldBehavior = Behavior;
+        //    }
+        //}
+
+        private void FreeOldSteering()
         {
-            switch (Behavior)
+            if (_steering != null)
             {
-                case EBehavior.None:
-                    _steering = null;
-                    break;
-
-                case EBehavior.Seek:
-                    _steering = new KinematicSeek(1, new StationaryLocation(10, 10));
-                    break;
+                SteeringTable.Instance.ReleaseBusySteering(_steering);
+                _steering = null;
+                Behavior  = EBehavior.None;
             }
         }
 
+        //private void ConfigureNewSteering()
+        //{
+        //    switch (Behavior)
+        //    {
+        //        case EBehavior.None:
+        //            _steering = null;
+        //            break;
+
+        //        case EBehavior.Seek:
+        //            _steering = SteeringTable.Instance.GetSeekSteering(0, new StationaryLocation(transform.position));
+        //            break;
+
+        //        case EBehavior.Arrive:
+        //            _steering = SteeringTable.Instance.GetArriveSteering(0, )
+        //    }
+        //}
+
+        // useful for the CustomInspector
         public KinematicSteering GetSteering()
         {
             return _steering;
+        }
+
+        private KinematicSteering GetNewSteeringFromTable(EBehavior behavior)
+        {
+            FreeOldSteering();
+
+            return SteeringTable.Instance.GetFreeSteering(behavior);
+        }
+
+        // ========================================================================
+        // ||                      STEERING CONSTRUCTION                          ||
+        // ========================================================================
+
+        public void RemoveSteering()
+        {
+            FreeOldSteering();
+        }
+
+        public void AddSeekSteering(float maxSpeed, Location target)
+        {
+            KinematicSeek seek = (KinematicSeek) GetNewSteeringFromTable(EBehavior.Seek);
+
+            seek.__KinematicSeek__(maxSpeed, target);
+
+            _steering = seek;
+        }
+
+        public void AddArriveSteering(float maxSpeed, Location target,
+            float timeToTarget, float targetRadius, float slowRadius)
+        {
+            KinematicArrive arrive = (KinematicArrive)GetNewSteeringFromTable(EBehavior.Arrive);
+
+            arrive.__KinematicArrive__(maxSpeed, target, timeToTarget, targetRadius, slowRadius);
+
+            _steering = arrive;
+        }
+
+        public void AddFleeSteering(float maxSpeed, Location target)
+        {
+            KinematicFlee flee = (KinematicFlee) GetNewSteeringFromTable(EBehavior.Flee);
+
+            flee.__KinematicFlee(maxSpeed, target);
+
+            _steering = flee;
         }
     }
 }

@@ -16,24 +16,34 @@ namespace MonsterAdventure.AI
             _rigidBody = GetComponent<Rigidbody2D>();
         }
 
-        public void Actualize(float time, SteeringOutput steering)
+        public void Actualize(SteeringOutput steering)
         {
-            Integrate(time, steering.Linear);
+            _rigidBody.velocity = steering.Linear;
         }
 
-        private void Integrate(float time, Vector2 velocity)
-        {
-            Move(velocity * time);
-        }
+        //public void Actualize(float time, SteeringOutput steering)
+        //{
+        //    Integrate(time, steering.Linear);
+        //}
 
-        private void Move(Vector2 movement)
-        {
-            _rigidBody.MovePosition(_rigidBody.position + movement);
-        }
+        //private void Integrate(float time, Vector2 velocity)
+        //{
+        //    Move(velocity*time);
+        //}
+
+        //private void Move(Vector2 movement)
+        //{
+        //    _rigidBody.MovePosition(_rigidBody.position + movement);
+        //}
 
         public Vector2 GetPosition()
         {
             return _rigidBody.position;
+        }
+
+        public Vector2 GetVelocity()
+        {
+            return _rigidBody.velocity;
         }
     }
 }

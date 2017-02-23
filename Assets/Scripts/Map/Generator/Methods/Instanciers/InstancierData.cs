@@ -15,7 +15,7 @@ namespace MonsterAdventure.Generation
         private Dictionary<int, InstancierValue> _sortedInstancierValues;
 
         private Map _map;
-        private PoolAllocatorTable _poolAllocatorTable;
+        //private PoolTable _poolTable;
 
         protected override void AwakeContent()
         {
@@ -37,10 +37,11 @@ namespace MonsterAdventure.Generation
         {
             _map = GameObject.FindGameObjectWithTag("Map").GetComponent<Map>();
 
-            _poolAllocatorTable =
-                GameObject.FindGameObjectWithTag("PoolAllocatorTable").GetComponent<PoolAllocatorTable>();
+            //_poolTable =
+            //   GameObject.FindGameObjectWithTag("PoolAllocatorTable").GetComponent<PoolTable>();
 
-            return new InstancierMethod(this, generationTable, _map.SectorManager, _poolAllocatorTable);
+            //return new InstancierMethod(this, generationTable, _map.SectorManager, _poolTable);
+            return new InstancierMethod(this, generationTable, _map.SectorManager);
         }
 
         public Dictionary<int, InstancierValue> GetDictionary()

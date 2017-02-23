@@ -8,7 +8,7 @@ namespace MonsterAdventure.AI
 {
     public enum LocationType
     {
-        StationayLocation,
+        StationaryLocation,
         TransformLocation
     }
 

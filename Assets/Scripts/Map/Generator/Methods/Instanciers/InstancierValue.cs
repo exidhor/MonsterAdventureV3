@@ -7,12 +7,8 @@ using UnityEngine;
 namespace MonsterAdventure.Generation
 {
     [Serializable]
-    public class InstancierValue
+    public class InstancierValue : PoolEntry
     {
         public int Value;
-        public GameObject Prefab;
-        public uint PoolSize = 100;
-        public bool IsStatic;
-        public uint ExpandPoolSize = 10;
     }
 }
