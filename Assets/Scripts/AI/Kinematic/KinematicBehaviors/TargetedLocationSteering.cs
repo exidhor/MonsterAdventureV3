@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    public abstract class TargetedKinematicSteering : KinematicSteering
+    public abstract class TargetedLocationSteering : KinematicSteering
     {
         public LocationComponent Target;
 
@@ -15,7 +15,7 @@ namespace MonsterAdventure.AI
             Target = new LocationComponent();
         } 
 
-        protected void __TargetedKinematicSteering__(float maxSpeed, Location target)
+        public void __TargetedLocationSteering__(float maxSpeed, Location target)
         {
             __KinematicSteering__(maxSpeed);
 

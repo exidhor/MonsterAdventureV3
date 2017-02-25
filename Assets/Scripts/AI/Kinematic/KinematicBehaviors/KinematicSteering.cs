@@ -13,7 +13,7 @@ namespace MonsterAdventure.AI
 
         private float _maxSpeed;
 
-        protected abstract void GiveSteering(ref SteeringOutput output, Kinematic character);
+        public abstract void GiveSteering(ref SteeringOutput output, Kinematic character);
 
         public void ConfigureSteeringOutput(ref SteeringOutput output, Kinematic character)
         {

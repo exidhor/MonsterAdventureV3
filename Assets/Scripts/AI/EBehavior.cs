@@ -10,6 +10,9 @@ namespace MonsterAdventure.AI
         None,
         Seek,
         Flee,
-        Arrive
+        Arrive,
+        Wander,
+        Pursue,
+        Evade
     }
 }

@@ -20,7 +20,7 @@ namespace MonsterAdventure.Generation
             {
                 for (int x = 0; x < generationGrid.lineSize; x++)
                 {
-                    float sample = GetRandomData().RandomGenerator.NextFloat();
+                    float sample = RandomGenerator.Instance.NextFloat();
 
                     generationGrid.Get(x, y).SetValue(sample);
                 }

@@ -9,13 +9,10 @@ namespace MonsterAdventure
     public class GameLoader : MonoBehaviour
     {
         public Map map;
-        public RandomGenerator randomGenerator;
 
         void Start()
         {
-            randomGenerator.Construct();
-
-            map.Construct(randomGenerator);
+            map.Construct();
 
             //map.Generate();
         }

@@ -12,9 +12,9 @@ namespace MonsterAdventure
         public GameObject GameObject;
         public bool IsUsed;
 
-        public Resource(GameObject GameObject)
+        public Resource(GameObject gameObject)
         {
-            this.GameObject = GameObject;
+            this.GameObject = gameObject;
             IsUsed = false;
         }
     }

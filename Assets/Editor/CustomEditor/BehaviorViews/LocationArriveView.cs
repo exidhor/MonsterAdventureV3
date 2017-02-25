@@ -6,13 +6,13 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class KinematicArriveView : TargetedKinematicSteeringView
+    public class LocationArriveView : TargetedLocationSteeringView
     {
         private FloatField _pendingTimeToTarget;
         private FloatField _pendingTargetRadius;
         private FloatField _pendingSlowRadius;
 
-        public KinematicArriveView()
+        public LocationArriveView()
         {
             _pendingTimeToTarget = new FloatField(0);
             _pendingTargetRadius = new FloatField(0);
@@ -45,6 +45,17 @@ namespace MonsterAdventure.Editor
                 _pendingTimeToTarget.Value,
                 _pendingTargetRadius.Value,
                 _pendingSlowRadius.Value);
+        }
+
+        protected override void RevertFrom(KinematicSteering steering)
+        {
+            base.RevertFrom(steering);
+
+            KinematicArrive arrive = (KinematicArrive) steering;
+
+            _pendingTimeToTarget.SetValue(arrive.GetTimeToTarget());
+            _pendingTargetRadius.SetValue(arrive.GetTargetRadius());
+            _pendingSlowRadius.SetValue(arrive.GetSlowRadius());
         }
     }
 }

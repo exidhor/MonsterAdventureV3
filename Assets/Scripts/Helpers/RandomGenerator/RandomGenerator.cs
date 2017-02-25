@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 // use for random generator
-using System;
+using Random = UnityEngine.Random;
 
 
 namespace MonsterAdventure
@@ -13,13 +14,12 @@ namespace MonsterAdventure
      *          It keep the seed of the generation, and allow to regenerate
      *          exactly the same number sequence.
      */
-    public class RandomGenerator : MonoBehaviour
+    public class RandomGenerator : MonoSingleton<RandomGenerator>
     {
-
         public int seed;
         public bool generateRandomSeed;
 
-        private System.Random _pseudoRandom;
+        private Random _pseudoRandom;
 
         /*!
         * \brief   TODO
@@ -49,7 +49,7 @@ namespace MonsterAdventure
                 seed = GenerateRandomSeed();
             }
 
-            _pseudoRandom = ConstructPseudoRandom(seed);
+            InitWithSeed(seed);
 
             print("Random number generator done with seed :" + seed);
         }
@@ -58,7 +58,7 @@ namespace MonsterAdventure
         {
             this.seed = seed;
 
-            _pseudoRandom = ConstructPseudoRandom(seed);
+            InitWithSeed(seed);
 
             print("Random number generator done with seed : " + seed);
         }
@@ -67,41 +67,16 @@ namespace MonsterAdventure
          * \brief Generate a new seed using the current time 
          * \return seed 
          */
-        public static int GenerateRandomSeed()
+        public int GenerateRandomSeed()
         {
             DateTime currentTime = DateTime.Now;
             return currentTime.Ticks.ToString().GetHashCode();
         }
 
-        /*!
-         * \brief   Return a save of the random at this moment
-         * \return  the save
-         */
-        public RandomState GetState()
-        {
-            RandomState randomState = new RandomState();
-            randomState.Save(_pseudoRandom, seed);
 
-            return randomState;
-        }
-
-        /*!
-         * \brief   Restore a save of the random
-         * \param   a_RandomState the random to restore
-         */
-        public void RestoreState(RandomState randomState)
+        private void InitWithSeed(int seed)
         {
-            _pseudoRandom = randomState.Restore();
-        }
-
-        /*!
-         * \brief Construct the pseudo random generator
-         * \param a_Seed Used to initialize the generator
-         * \return Pseudo random generator constructed
-         */
-        private System.Random ConstructPseudoRandom(int seed)
-        {
-            return new System.Random(seed);
+             Random.InitState(seed);
         }
 
         /*!
@@ -110,31 +85,46 @@ namespace MonsterAdventure
          * \param a_MinValue the boundary end of the interval
          * \return random value
          */
-        public int Next(int minValue, int maxValue)
+        public int NextInt(int minValue, int maxValue)
         {
-            return _pseudoRandom.Next(minValue, maxValue);
+            return Random.Range(minValue, maxValue);
         }
 
-        public int Next(int maxValue)
+        public int NextInt(int maxValue)
         {
-            return _pseudoRandom.Next(maxValue);
+            return NextInt(0, maxValue);
         }
 
-        public int Next()
+        public int NextInt()
         {
-            return _pseudoRandom.Next();
+            return NextInt(int.MinValue, int.MaxValue);
         }
 
-        public float NextWideFloat()
+        public float NextWideUniformFloat()
         {
-            double mantissa = (_pseudoRandom.NextDouble() * 2.0) - 1.0;
-            double exponent = Math.Pow(2.0, _pseudoRandom.Next(-126, 128));
+            double mantissa = (NextFloat(0f, 1.0f) * 2.0) - 1.0;
+            double exponent = Math.Pow(2.0, NextInt(-126, 128));
             return (float)(mantissa * exponent);
         }
 
         public float NextFloat()
         {
-            return (float)_pseudoRandom.NextDouble();
+            return Random.value;
+        }
+
+        public float NextFloat(float maxValue)
+        {
+            return NextFloat(0, maxValue);
+        }
+
+        public float NextFloat(float minValue, float maxValue)
+        {
+            return Random.Range(minValue, maxValue);
+        }
+
+        public float NextBinomialFloat(float max)
+        {
+            return NextFloat(max) - NextFloat(max);
         }
 
         /*!
@@ -143,7 +133,7 @@ namespace MonsterAdventure
          */
         public bool NextBool()
         {
-            if (_pseudoRandom.Next(0, 2) == 1)
+            if (NextInt(0, 2) == 1)
                 return true;
 
             return false;
@@ -159,7 +149,7 @@ namespace MonsterAdventure
          *          interval collisions (which will be handle).
          * \return  the random value         
         */
-        public int Next(int minValue, int maxValue, List<Boundary> forbiddenBoundaries)
+        public int NextInt(int minValue, int maxValue, List<Boundary> forbiddenBoundaries)
         {
             SortBoundaryList(forbiddenBoundaries);
             ResolveCollisions(forbiddenBoundaries);
@@ -231,7 +221,7 @@ namespace MonsterAdventure
             if (totalWidth == 0)
                 return int.MinValue;
 
-            int indexValue = Next(0, totalWidth);
+            int indexValue = NextInt(0, totalWidth);
 
             int indexJumping = 0; // the value of the first interval born
             int indexJoin = 0; // the value of the current index

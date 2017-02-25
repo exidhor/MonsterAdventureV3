@@ -7,39 +7,8 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
-    public class PoolTable : MonoBehaviour
+    public class PoolTable : MonoSingleton<PoolTable>
     {
-        // -------------- SINGLETON PART -------------------------
-
-        private static PoolTable _instance = null;
-
-        public static PoolTable Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("Pool Table");
-                    _instance = go.AddComponent<PoolTable>();
-                }
-
-                return _instance;
-            }
-        }
-
-        public static PoolTable NotModifiedInstance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        // ------------------------------------------------------
-
-
-        //public Pool Prefab;
-
         private Dictionary<int, Pool> _table;
 
         private void Awake()
@@ -69,16 +38,6 @@ namespace MonsterAdventure
         {
             return _table[instanceID];
         }
-
-        /*private Pool InstanciatePool(GameObject model, bool isStatic, uint expandSize)
-        {
-            Pool pool = Instantiate<Pool>(Prefab);
-            pool.transform.parent = gameObject.transform;
-
-            pool.Construct(model, isStatic, expandSize);
-
-            return pool;
-        }*/
 
         private Pool InstanciatePool(GameObject model, bool isStatic, uint expandSize)
         {

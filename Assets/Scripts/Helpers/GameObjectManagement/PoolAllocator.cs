@@ -7,32 +7,8 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
-    public class PoolAllocator : MonoBehaviour
+    public class PoolAllocator : MonoSingleton<PoolAllocator>
     {
-        private static PoolAllocator _instance = null;
-
-        public static PoolAllocator Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("Pool Allocator");
-                    _instance = go.AddComponent<PoolAllocator>();
-                }
-
-                return _instance;
-            }
-        }
-
-        public static PoolAllocator NotModifiedInstance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
         public bool UseCoroutine;
 
         public uint MinAllocations;
@@ -48,16 +24,8 @@ namespace MonsterAdventure
 
         private void Awake()
         {
-            // we register this instance if it is created in the editor
-            _instance = this;
-
             // set the capacity
             ToResolve = new Queue<PoolRequest>((int) PoolRequestCapacity);
-        }
-
-        private void OnDestroy()
-        {
-            _instance = null;
         }
 
         private void Start()

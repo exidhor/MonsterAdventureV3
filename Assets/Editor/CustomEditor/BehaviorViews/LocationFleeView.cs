@@ -6,7 +6,7 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class KinematicFleeView : KinematicSeekView
+    public class LocationFleeView : LocationSeekView
     {
         protected override string GetTitle()
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    public class KinematicArrive : TargetedKinematicSteering
+    public class KinematicArrive : TargetedLocationSteering
     {
         private float _timeToTarget;
         private float _targetRadius;
@@ -15,16 +15,19 @@ namespace MonsterAdventure.AI
         public void __KinematicArrive__(float maxSpeed, Location target, float timeToTarget,
             float targetRadius, float slowRadius)
         {
-            __TargetedKinematicSteering__(maxSpeed, target);
+            __TargetedLocationSteering__(maxSpeed, target);
 
             _timeToTarget = timeToTarget;
             _targetRadius = targetRadius;
             _slowRadius = slowRadius;
         }
 
-        protected override void GiveSteering(ref SteeringOutput output, Kinematic character)
+        public override void GiveSteering(ref SteeringOutput output, Kinematic character)
         {
+            // init useless stuff
             output.IsKinematic = true;
+            output.AngularInDegree = 0f;
+            output.IsOriented = false;
 
             // First work out the direction
             output.Linear = GetTargetPosition();
@@ -59,5 +62,21 @@ namespace MonsterAdventure.AI
                 output.Linear = Vector2.ClampMagnitude(output.Linear, GetMaxSpeed());
             }
         }
+
+        public float GetTimeToTarget()
+        {
+            return _timeToTarget;
+        }
+
+        public float GetTargetRadius()
+        {
+            return _targetRadius;
+        }
+
+        public float GetSlowRadius()
+        {
+            return _slowRadius;
+        }
     }
+
 }

@@ -165,13 +165,13 @@ namespace MonsterAdventure
             methods[3] = simplexMethods;
         }
 
-        public void InitWithSeed(RandomGenerator random)
+        public void InitWithSeed()
         {
             // Knuth shuffle algorithm
             for (int t = 0; t < hash.Length; t++)
             {
                 int tmp = hash[t];
-                int r = random.Next(t, hash.Length);
+                int r = RandomGenerator.Instance.NextInt(t, hash.Length);
                 hash[t] = hash[r];
                 hash[r] = tmp;
             }

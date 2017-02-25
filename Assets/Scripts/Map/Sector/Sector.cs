@@ -23,14 +23,10 @@ namespace MonsterAdventure
 
         private bool _isVisible;
 
-        private PoolAllocator _poolAllocator;
-
-        public void Construct(Rect bounds, Coords coords, PoolAllocator poolAllocator)
+        public void Construct(Rect bounds, Coords coords)
         {
             _bounds = bounds;
             transform.position = _bounds.position;
-
-            _poolAllocator = poolAllocator;
             _coords = coords;
 
             name = "Sector (" + coords.abs + ", " + coords.ord + ")";
@@ -72,13 +68,13 @@ namespace MonsterAdventure
         private void EnableTracedObjects()
         {
             //Debug.Log("Instanciate Sector " + _coords);
-            _poolAllocator.AddPoolRequest(ConstructPoolRequest(PoolRequestAction.Allocate));
+            PoolAllocator.Instance.AddPoolRequest(ConstructPoolRequest(PoolRequestAction.Allocate));
         }
 
         private void DisableTracedObjects()
         {
             //Debug.Log("Release Sector " + _coords);
-            _poolAllocator.AddPoolRequest(ConstructPoolRequest(PoolRequestAction.Free));
+            PoolAllocator.Instance.AddPoolRequest(ConstructPoolRequest(PoolRequestAction.Free));
         }
 
         private PoolRequest ConstructPoolRequest(PoolRequestAction action)

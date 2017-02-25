@@ -7,15 +7,19 @@ namespace MonsterAdventure.AI
 {
     public class KinematicFlee : KinematicSeek
     {
-        public void __KinematicFlee(float maxSpeed, Location target)
+        public void __KinematicFlee__(float maxSpeed, Location target)
         {
             __KinematicSeek__(maxSpeed, target);
         }
 
-        protected override void GiveSteering(ref SteeringOutput output, Kinematic character)
+        public override void GiveSteering(ref SteeringOutput output, Kinematic character)
         {
-            // First work out the direction
+            // init useless stuff
             output.IsKinematic = true;
+            output.AngularInDegree = 0f;
+            output.IsOriented = false;
+
+            // First work out the direction
             output.Linear = character.GetPosition();
             output.Linear -= GetTargetPosition();
 

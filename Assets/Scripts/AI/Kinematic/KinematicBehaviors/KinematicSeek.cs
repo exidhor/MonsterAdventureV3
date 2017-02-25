@@ -6,31 +6,26 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    public class KinematicSeek : TargetedKinematicSteering
+    public class KinematicSeek : TargetedLocationSteering
     {
         public void __KinematicSeek__(float maxSpeed, Location target)
         {
-            __TargetedKinematicSteering__(maxSpeed, target);
+            __TargetedLocationSteering__(maxSpeed, target);
         }
 
-        protected override void GiveSteering(ref SteeringOutput output, Kinematic character)
+        public override void GiveSteering(ref SteeringOutput output, Kinematic character)
         {
-            //if (GetTargetLocation() == null)
-            //{
-            //    output.IsKinematic = true;
-            //    output.Linear = Vector2.zero;
-
-            //    return;
-            //}
+            // init useless stuff
+            output.IsKinematic = true;
+            output.AngularInDegree = 0f;
+            output.IsOriented = false;
 
             // First work out the direction
-            output.IsKinematic = true;
             output.Linear = GetTargetPosition();
             output.Linear -= character.GetPosition();
             
             // If there is no direction, do nothing
             output.Linear = MathHelper.GetKinematicMovement_MinCheck(output.Linear, GetMaxSpeed(), 0.01f);
-            //output.Linear = Vector2.ClampMagnitude(output.Linear, GetMaxSpeed());
         }
     }
 }

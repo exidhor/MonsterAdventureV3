@@ -52,10 +52,9 @@ namespace MonsterAdventure
         /// </summary>
         /// <param name="resolution">The number of cellula we want</param>
         /// <param name="transform">The transform on which we will position the Noise</param>
-        /// <param name="random">The RandomGenerator to control the procuderal Generation</param>
-        public void Generate(int resolution, Transform transform, RandomGenerator random)
+        public void Generate(int resolution, Transform transform)
         {
-            _noise.InitWithSeed(random);
+            _noise.InitWithSeed();
             _halfSize = 0.5f;
             _stepSize = (float)_halfSize / resolution;
 

@@ -6,7 +6,7 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class KinematicSeekView : TargetedKinematicSteeringView
+    public class LocationSeekView : TargetedLocationSteeringView
     {
         //private KinematicSeek _seek; 
              
@@ -41,7 +41,7 @@ namespace MonsterAdventure.Editor
             // nothing
         }
 
-        //protected override TargetedKinematicSteering GetTargetedKinematicSteering()
+        //protected override TargetedLocationSteering GetTargetedKinematicSteering()
         //{
         //    return _seek;
         //}

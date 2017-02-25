@@ -6,20 +6,13 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public abstract class TargetedKinematicSteeringView : KinematicSteeringView
+    public abstract class TargetedLocationSteeringView : KinematicSteeringView
     {
         protected SerializableLocation _pendingTargetLocation;
 
-        protected TargetedKinematicSteeringView()
+        protected TargetedLocationSteeringView()
         {
             _pendingTargetLocation = new SerializableLocation();
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-
-            //TargetLocation = new SerializableLocation(GetTargetedKinematicSteering().Target);
         }
 
         protected override void DisplayContent()
@@ -36,15 +29,15 @@ namespace MonsterAdventure.Editor
         {
             base.Actualize(steering);
 
-            TargetedKinematicSteering targetedSteering = (TargetedKinematicSteering) steering;
-            _pendingTargetLocation.Actualize(targetedSteering.GetTargetLocationComponent());
+            TargetedLocationSteering targetedLocationSteering = (TargetedLocationSteering) steering;
+            _pendingTargetLocation.Actualize(targetedLocationSteering.GetTargetLocationComponent());
         }
 
         //protected override void ApplyOn(KinematicSteering steering)
         //{
         //    base.ApplyOn(steering);
 
-        //    TargetedKinematicSteering targetedSteering = (TargetedKinematicSteering) steering;
+        //    TargetedLocationSteering targetedSteering = (TargetedLocationSteering) steering;
 
         //    targetedSteering.SetTargetLocation(_pendingTargetLocation.ConstructLocation());
 
@@ -55,14 +48,14 @@ namespace MonsterAdventure.Editor
         {
             base.RevertFrom(steering);
 
-            TargetedKinematicSteering targetedSteering = (TargetedKinematicSteering)steering;
+            TargetedLocationSteering targetedLocationSteering = (TargetedLocationSteering)steering;
 
-            _pendingTargetLocation.Actualize(targetedSteering.GetTargetLocationComponent());
+            _pendingTargetLocation.Actualize(targetedLocationSteering.GetTargetLocationComponent());
 
             //TargetLocation.Initialize(GetTargetedKinematicSteering().GetTargetLocationComponent());
         }
 
-        //protected abstract TargetedKinematicSteering GetTargetedKinematicSteering();
+        //protected abstract TargetedLocationSteering GetTargetedKinematicSteering();
 
         //protected override KinematicSteering GetSteering()
         //{

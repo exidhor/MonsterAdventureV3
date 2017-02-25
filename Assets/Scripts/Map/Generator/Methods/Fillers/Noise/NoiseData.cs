@@ -6,14 +6,11 @@ using UnityEngine;
 
 namespace MonsterAdventure.Generation
 {
+    [RequireComponent(typeof(NoiseGenerator))]
     public class NoiseData : FillerData
     {
+        [HideInInspector]
         public NoiseGenerator noiseGenerator;
-
-        public RandomGenerator randomGenerator
-        {
-            get { return _map.RandomGenerator; }
-        }
 
         public Transform noiseTransform
         {
@@ -29,7 +26,7 @@ namespace MonsterAdventure.Generation
 
         protected override void StartContent()
         {
-            // nothing
+            noiseGenerator = GetComponent<NoiseGenerator>();
         }
 
         protected override GenerationMethod ConstructGenerationMethod(GenerationTable generationTable)

@@ -25,11 +25,6 @@ namespace MonsterAdventure
             get { return _sectorManager; }
         }
 
-        public RandomGenerator RandomGenerator
-        {
-            get { return _randomGenerator; }
-        }
-
         public Rect Bounds
         {
             get { return _bounds; }
@@ -39,7 +34,6 @@ namespace MonsterAdventure
         private Rect _bounds;
 
         private SectorManager _sectorManager;
-        private RandomGenerator _randomGenerator;
         private MovableGrid _movableGrid;
 
         private Player _player;
@@ -51,10 +45,8 @@ namespace MonsterAdventure
             _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         }
 
-        public void Construct(RandomGenerator randomGenerator)
+        public void Construct()
         {
-            _randomGenerator = randomGenerator;
-
             CreateManagers();
 
             float tileSize = 1f;

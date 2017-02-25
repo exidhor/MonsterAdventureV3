@@ -6,49 +6,24 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    public class SteeringTable : MonoBehaviour
+    public class SteeringTable : MonoSingleton<SteeringTable>
     {
-        private static SteeringTable _instance = null;
-
-        public static SteeringTable Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("Steering Table");
-                    _instance = go.AddComponent<SteeringTable>();
-                }
-
-                return _instance;
-            }
-        }
-
-        public static SteeringTable NotModifiedInstance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
         public List<SteeringEntry> SteeringEntries;
 
-        private Dictionary<EBehavior, Pool> _table;
+        public int TableCount
+        {
+            get { return _table.Count; }
+        }
+
+        //private Dictionary<EBehavior, Pool> _table;
+        private MappedList<EBehavior, Pool> _table;
 
         private PoolRequest _poolRequestBuffer;
 
         private void Awake()
         {
-            // we register this instance if it is created in the editor
-            _instance = this;
-
-            _table = new Dictionary<EBehavior, Pool>();
-        }
-
-        private void OnDestroy()
-        {
-            _instance = null;
+            //_table = new Dictionary<EBehavior, Pool>();
+            _table = new MappedList<EBehavior, Pool>();
         }
 
         private void Start()
@@ -71,8 +46,8 @@ namespace MonsterAdventure.AI
                     if (SteeringEntries[i].Behavior == done[j])
                     {
                         Debug.LogWarning("Multiple times the same behavior entry " + done[j] + " !\n"
-                            + "This is not allowed, only the first will be keeped, " 
-                            + SteeringEntries[i].Prefab + " will be discarded");
+                                         + "This is not allowed, only the first will be keeped, "
+                                         + SteeringEntries[i].Prefab + " will be discarded");
 
                         isDone = true;
                     }
@@ -97,7 +72,7 @@ namespace MonsterAdventure.AI
             if (behavior == EBehavior.None)
                 return null;
 
-            Pool pool = _table[behavior];
+            Pool pool = _table.GetByKey(behavior);
 
             _poolRequestBuffer.InitAllocation(pool, 1);
             PoolAllocator.Instance.DoInstancePoolRequest(_poolRequestBuffer);
@@ -113,6 +88,12 @@ namespace MonsterAdventure.AI
             _poolRequestBuffer.InitRelease(steering.GetPoolObject());
 
             PoolAllocator.Instance.DoInstancePoolRequest(_poolRequestBuffer);
+        }
+
+        // use it to iterate in the table
+        public Pool GetPoolAt(int index)
+        {
+            return _table.GetByIndex(index);
         }
     }
 }

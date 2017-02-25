@@ -115,16 +115,35 @@ namespace MonsterAdventure.Editor
                     break;
 
                 case EBehavior.Seek:
-                    _steeringView = new KinematicSeekView();
+                    _steeringView = new LocationSeekView();
                     break;
 
                 case EBehavior.Flee:
-                    _steeringView = new KinematicFleeView();
+                    _steeringView = new LocationFleeView();
                     break;
 
                 case EBehavior.Arrive:
-                    _steeringView = new KinematicArriveView();
+                    _steeringView = new LocationArriveView();
                     break;
+
+                case EBehavior.Wander:
+                    _steeringView = new KinematicWanderView();
+                    break;
+
+                case EBehavior.Pursue:
+                    _steeringView = new KinematicPursueView();
+                    break;
+
+                case EBehavior.Evade:
+                    _steeringView = new KinematicEvadeView();
+                    break;
+            }
+
+            KinematicSteering currentSteering = _AIComponent.GetSteering();
+
+            if (currentSteering != null)
+            {
+                //_steeringView.Initialize(currentSteering);
             }
         }
 

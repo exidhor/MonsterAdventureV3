@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
+    [Serializable]
     public class StationaryLocation : Location
     {
+        [SerializeField]
         private Vector2 _position;
 
         public StationaryLocation(Vector2 position)

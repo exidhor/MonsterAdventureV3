@@ -90,10 +90,7 @@ namespace MonsterAdventure
 
         private void ResetPoolList(int capacity)
         {
-            if (capacity != PoolObjects.Capacity)
-            {
-                PoolObjects.Capacity = capacity;
-            }
+            PoolObjects.Capacity = capacity;
             PoolObjects.Clear();
         }
     }

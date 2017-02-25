@@ -12,7 +12,7 @@ namespace MonsterAdventure.Editor
     {
         protected FloatField _pendingMaxSpeed;
 
-        private bool _showContent;
+        private bool _showContent = true;
 
         //private KinematicSteering _steering;
 
@@ -21,9 +21,9 @@ namespace MonsterAdventure.Editor
             _pendingMaxSpeed = new FloatField(0);
         }
 
-        protected virtual void Initialize()
+        public void Initialize(KinematicSteering steering)
         {
-            //_pendingMaxSpeed = GetSteering().GetMaxSpeed();
+            RevertFrom(steering);
         }
 
         public void DisplayOnGUI(AIComponent AIComponent)

@@ -10,7 +10,7 @@ namespace MonsterAdventure.AI
     public class AIComponent : MonoBehaviour
     {
         public EBehavior Behavior = EBehavior.None;
-        private EBehavior _oldBehavior = EBehavior.None;    
+        private EBehavior _oldBehavior = EBehavior.None;   // todo : check if it is used 
         public SteeringOutput OutputBuffer;
 
         private Kinematic _kinematic;
@@ -21,6 +21,19 @@ namespace MonsterAdventure.AI
         private void Awake()
         {
             _instanceIdInScene = GetInstanceID();
+        }
+
+        private void OnEnable()
+        {
+            AIEngine.Instance.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            if (AIEngine.InternalInstance != null)
+            {
+                AIEngine.Instance.Unregister(this);
+            }
         }
 
         private void Start()
@@ -41,15 +54,21 @@ namespace MonsterAdventure.AI
 
         private void FixedUpdate()
         {
-            //ApplyKinematicSteering();
+            // nothing !
+        }
+
+        public void ActualizeSteerings()
+        {
 
             if (_steering != null)
             {
                 _steering.ConfigureSteeringOutput(ref OutputBuffer, _kinematic);
             }
+        }
 
-            //_kinematic.Actualize(Time.fixedDeltaTime, OutputBuffer);
-            _kinematic.Actualize(OutputBuffer);
+        public void ActualizeKinematic(float deltaTime)
+        {
+            _kinematic.Actualize(OutputBuffer, deltaTime);
         }
 
         public int GetInstanceIdInScene()
@@ -78,9 +97,10 @@ namespace MonsterAdventure.AI
             if (_steering != null)
             {
                 SteeringTable.Instance.ReleaseBusySteering(_steering);
-                _steering = null;
-                Behavior  = EBehavior.None;
             }
+
+            _steering = null;
+            Behavior = EBehavior.None;
         }
 
         //private void ConfigureNewSteering()
@@ -109,6 +129,8 @@ namespace MonsterAdventure.AI
         private KinematicSteering GetNewSteeringFromTable(EBehavior behavior)
         {
             FreeOldSteering();
+
+            Behavior = behavior;
 
             return SteeringTable.Instance.GetFreeSteering(behavior);
         }
@@ -145,9 +167,36 @@ namespace MonsterAdventure.AI
         {
             KinematicFlee flee = (KinematicFlee) GetNewSteeringFromTable(EBehavior.Flee);
 
-            flee.__KinematicFlee(maxSpeed, target);
+            flee.__KinematicFlee__(maxSpeed, target);
 
             _steering = flee;
+        }
+
+        public void AddWanderSteering(float maxSpeed, float maxRotation, float maxOffsetChange)
+        {
+            KinematicWander wander = (KinematicWander) GetNewSteeringFromTable(EBehavior.Wander);
+
+            wander.__KinematicWander__(maxSpeed, maxRotation, maxOffsetChange);
+
+            _steering = wander;
+        }
+
+        public void AddPursueSteering(float maxSpeed, Kinematic target, float maxPredictionTime)
+        {
+            KinematicPursue pursue = (KinematicPursue) GetNewSteeringFromTable(EBehavior.Pursue);
+
+            pursue.__KinematicPursue__(maxSpeed, target, maxPredictionTime);
+
+            _steering = pursue;
+        }
+
+        public void AddEvadeSteering(float maxSpeed, Kinematic target, float maxPredictionTime)
+        {
+            KinematicEvade evade = (KinematicEvade) GetNewSteeringFromTable(EBehavior.Evade);
+
+            evade.__KinematicEvade__(maxSpeed, target, maxPredictionTime);
+
+            _steering = evade;
         }
     }
 }

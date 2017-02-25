@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
-    public class Pool : MonoBehaviour
+    public partial class Pool : MonoBehaviour
     {
         public List<Resource> Resources;
 
@@ -14,7 +15,8 @@ namespace MonsterAdventure
         private bool _isStatic;
         private int _expandSize;
 
-        private int _lastFreeResource;
+        private int _firstFreeResource;
+        private int _lastBusyResource;
 
         public void Construct(GameObject model, bool isStatic, uint expandSize)
         {
@@ -26,7 +28,8 @@ namespace MonsterAdventure
 
             Resources = new List<Resource>();
 
-            _lastFreeResource = 0;
+            _firstFreeResource = 0;
+            _lastBusyResource = 0;
         }
 
         public void SetSize(uint newSize)
@@ -60,7 +63,7 @@ namespace MonsterAdventure
         public void GetFreeResource(PoolObject poolObjectDest)
         {
             int i;
-            for (i = _lastFreeResource; i < Resources.Count; i++)
+            for (i = _firstFreeResource; i < Resources.Count; i++)
             {
                 if (!Resources[i].IsUsed)
                 {
@@ -84,16 +87,21 @@ namespace MonsterAdventure
                 Resources[index].IsUsed = true;
                 Resources[index].GameObject.SetActive(true);
 
-                _lastFreeResource = index + 1;
+                _firstFreeResource = index + 1;
+
+                if (_lastBusyResource < index)
+                {
+                    _lastBusyResource = index;
+                }
             }
             else
             {
                 Resources[index].IsUsed = false;
                 Resources[index].GameObject.SetActive(false);
 
-                if (_lastFreeResource > index)
+                if (_firstFreeResource > index)
                 {
-                    _lastFreeResource = index;
+                    _firstFreeResource = index;
                 }
             }
         }
@@ -136,6 +144,12 @@ namespace MonsterAdventure
             newGameObject.SetActive(false);
 
             return new Resource(newGameObject);
+        }
+
+        public PoolEnum<T> GetEnumerator<T>()
+            where T : MonoBehaviour
+        {
+            return new PoolEnum<T>(this);
         }
     }
 }

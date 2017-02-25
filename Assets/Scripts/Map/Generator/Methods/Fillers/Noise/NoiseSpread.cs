@@ -19,7 +19,7 @@ namespace MonsterAdventure.Generation
 
             : base(noiseData, generationTable, generationType)
         {
-            InitNoise(noiseData.level, noiseData.randomGenerator, noiseData.noiseTransform);
+            InitNoise(noiseData.level, noiseData.noiseTransform);
         }
 
         protected override void FillGenerationGrid(GenerationGrid generationGrid)
@@ -35,11 +35,11 @@ namespace MonsterAdventure.Generation
             }
         }
 
-        private void InitNoise(uint level, RandomGenerator randomGenerator, Transform transform)
+        private void InitNoise(uint level, Transform transform)
         {
             GetNoiseData().noiseGenerator.Construct();
 
-            GetNoiseData().noiseGenerator.Generate((int)Math.Pow(2, level), transform, randomGenerator);
+            GetNoiseData().noiseGenerator.Generate((int)Math.Pow(2, level), transform);
         }
 
         public Gradient GetDebugGradient()

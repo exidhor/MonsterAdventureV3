@@ -37,7 +37,7 @@ namespace MonsterAdventure
          * \param   a_Random the random which has to be saved
          * \param   a_Seed the seed of the random (not necessary)
         */
-        public void Save(System.Random random, int seed)
+        public void Save(UnityEngine.Random random, int seed)
         {
             _seed = seed;
 
@@ -52,12 +52,12 @@ namespace MonsterAdventure
          * \brief   Get the random saved
          * \return  The random saved
         */
-        public System.Random Restore()
+        public UnityEngine.Random Restore()
         {
             MemoryStream stream = new MemoryStream(_save);
             BinaryFormatter formatter = new BinaryFormatter();
 
-            return (System.Random)formatter.Deserialize(stream);
+            return (UnityEngine.Random)formatter.Deserialize(stream);
         }
     }
 }
