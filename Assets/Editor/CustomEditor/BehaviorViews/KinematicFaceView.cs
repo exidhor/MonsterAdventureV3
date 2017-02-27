@@ -6,21 +6,20 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class LocationFleeView : LocationSeekView
+    public class KinematicFaceView : TargetedLocationSteeringView
     {
         protected override string GetTitle()
         {
-            return "Flee";
+            return "Face";
         }
 
         public override EBehavior GetBehavior()
         {
-            return EBehavior.Flee;
+            return EBehavior.Face;
         }
-
         protected override void ApplyOn(AIComponent AIComponent)
         {
-            AIComponent.AddFleeSteering(_pendingMaxSpeed.Value, _pendingTargetLocation.ConstructLocation());
+            AIComponent.AddFaceSteering(_pendingTargetLocation.ConstructLocation());
         }
     }
 }

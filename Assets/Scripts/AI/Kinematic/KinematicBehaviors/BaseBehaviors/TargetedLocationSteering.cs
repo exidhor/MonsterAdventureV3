@@ -27,6 +27,11 @@ namespace MonsterAdventure.AI
             Target.SetLocation(location);
         }
 
+        public void SetTargetPosition(Vector2 targetPosition)
+        {
+            Target.SetTargetPosition(targetPosition);
+        }
+
         public Vector2 GetTargetPosition()
         {
             return Target.GetPosition();

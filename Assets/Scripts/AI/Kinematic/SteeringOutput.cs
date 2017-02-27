@@ -12,6 +12,7 @@ namespace MonsterAdventure.AI
     {
         public bool IsKinematic;
         public bool IsOriented;
+        public bool IsInstantOrientation;
 
         public Vector2 Linear;
 
@@ -40,6 +41,17 @@ namespace MonsterAdventure.AI
             Linear = Vector2.zero;
             AngularInDegree = 0;
             IsKinematic = true;
+            IsOriented = false;
+            IsInstantOrientation = false;
+        }
+
+        public bool IsFilled()
+        {
+            if (AngularInDegree > Mathf.Epsilon || AngularInDegree < -Mathf.Epsilon)
+                return true;
+
+            return Linear.x > Mathf.Epsilon || Linear.x < -Mathf.Epsilon
+                || Linear.y > Mathf.Epsilon || Linear.y < - Mathf.Epsilon;
         }
     }
 }

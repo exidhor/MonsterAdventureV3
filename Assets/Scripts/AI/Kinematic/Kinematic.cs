@@ -46,7 +46,15 @@ namespace MonsterAdventure.AI
         {
             ResetVelocity();
 
-            Rotate(steering.AngularInDegree, deltaTime);
+            if (steering.IsInstantOrientation)
+            {
+                OrientationInDegree = steering.AngularInDegree;
+                _rotationInDegree = 0;
+            }
+            else
+            {
+                Rotate(steering.AngularInDegree, deltaTime);
+            }
 
             Vector2 movement = steering.Linear;
 
@@ -123,7 +131,7 @@ namespace MonsterAdventure.AI
         {
             // verify if it need actualization, otherwise
             // we keep the old value
-            if (GetVelocity().sqrMagnitude > float.Epsilon)
+            if (GetVelocity().sqrMagnitude > float.Epsilon * float.Epsilon)
             {
                 OrientationInRadian = Mathf.Atan2(GetVelocity().x, GetVelocity().y);
             }

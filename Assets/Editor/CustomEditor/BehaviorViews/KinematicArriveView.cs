@@ -6,13 +6,13 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class LocationArriveView : TargetedLocationSteeringView
+    public class KinematicArriveView : TargetedLocationSteeringView
     {
         private FloatField _pendingTimeToTarget;
         private FloatField _pendingTargetRadius;
         private FloatField _pendingSlowRadius;
 
-        public LocationArriveView()
+        public KinematicArriveView()
         {
             _pendingTimeToTarget = new FloatField(0);
             _pendingTargetRadius = new FloatField(0);

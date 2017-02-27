@@ -24,13 +24,15 @@ namespace MonsterAdventure.AI
         {
             //_table = new Dictionary<EBehavior, Pool>();
             _table = new MappedList<EBehavior, Pool>();
+
+            _poolRequestBuffer = new PoolRequest();
+
+            ConstructPools();
         }
 
         private void Start()
         {
-            _poolRequestBuffer = new PoolRequest();
-
-            ConstructPools();
+            
         }
 
         private void ConstructPools()

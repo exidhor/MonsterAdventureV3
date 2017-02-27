@@ -20,7 +20,6 @@ namespace MonsterAdventure.AI
 
         public override void GiveSteering(ref SteeringOutput output, Kinematic character)
         {
-            output.IsKinematic = true;
             output.IsOriented = true;
 
             // Move forward in the current direction

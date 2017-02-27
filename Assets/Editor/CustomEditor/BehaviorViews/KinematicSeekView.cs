@@ -6,7 +6,7 @@ using MonsterAdventure.AI;
 
 namespace MonsterAdventure.Editor
 {
-    public class LocationSeekView : TargetedLocationSteeringView
+    public class KinematicSeekView : TargetedLocationSteeringView
     {
         //private KinematicSeek _seek; 
              

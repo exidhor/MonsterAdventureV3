@@ -12,7 +12,11 @@ namespace MonsterAdventure.AI
         Flee,
         Arrive,
         Wander,
+        Face,
         Pursue,
-        Evade
+        Evade,
+        DelegateWander,
+
+        CollisionAvoidance
     }
 }

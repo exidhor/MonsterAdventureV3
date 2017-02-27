@@ -10,13 +10,13 @@ namespace MonsterAdventure.Editor
     [CustomEditor(typeof(KinematicSeek))]
     public class KinematicSeekEditor : UnityEditor.Editor
     {
-        private LocationSeekView _view;
+        private KinematicSeekView _view;
 
         void OnEnable()
         {
             KinematicSeek _seek = (KinematicSeek)serializedObject.targetObject;
 
-            _view = new LocationSeekView();
+            _view = new KinematicSeekView();
         }
 
         // when Unity displays the editor

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonsterAdventure.LightEffect;
 using UnityEngine;
 
 namespace MonsterAdventure.AI
@@ -14,7 +15,12 @@ namespace MonsterAdventure.AI
         public SteeringOutput OutputBuffer;
 
         private Kinematic _kinematic;
+
         private KinematicSteering _steering;
+
+        // tmp
+        private CollisionAvoidance _collisionAvoidance;
+        private List<Kinematic> _avoidanceTargets = new List<Kinematic>();
 
         private int _instanceIdInScene;
 
@@ -44,24 +50,33 @@ namespace MonsterAdventure.AI
 
             _steering = null;
 
-            //ApplyKinematicSteering();
+            AddCollisionAvoidance(3, 1);
         }
 
         private void Update()
         {
-            //ApplyKinematicSteering();
+
         }
 
         private void FixedUpdate()
         {
-            // nothing !
+
         }
 
         public void ActualizeSteerings()
         {
+            // begin with collision avoidance
+            OutputBuffer.Reset();
 
-            if (_steering != null)
+            if (_collisionAvoidance != null)
             {
+                _collisionAvoidance.ConfigureSteeringOutput(ref OutputBuffer, _kinematic);
+            }
+
+            if (_steering != null && !OutputBuffer.IsFilled())
+            {
+                OutputBuffer.Reset();
+
                 _steering.ConfigureSteeringOutput(ref OutputBuffer, _kinematic);
             }
         }
@@ -76,22 +91,6 @@ namespace MonsterAdventure.AI
             return _instanceIdInScene;
         }
 
-        //public void SetKinematicSteering(KinematicSteering kinematicSteering)
-        //{
-        //    _steering = kinematicSteering;
-        //}
-
-        //public void ApplyKinematicSteering()
-        //{
-        //    if (Behavior != _oldBehavior)
-        //    {
-        //        FreeOldSteering();
-        //        ConfigureNewSteering();
-
-        //        _oldBehavior = Behavior;
-        //    }
-        //}
-
         private void FreeOldSteering()
         {
             if (_steering != null)
@@ -103,27 +102,21 @@ namespace MonsterAdventure.AI
             Behavior = EBehavior.None;
         }
 
-        //private void ConfigureNewSteering()
-        //{
-        //    switch (Behavior)
-        //    {
-        //        case EBehavior.None:
-        //            _steering = null;
-        //            break;
-
-        //        case EBehavior.Seek:
-        //            _steering = SteeringTable.Instance.GetSeekSteering(0, new StationaryLocation(transform.position));
-        //            break;
-
-        //        case EBehavior.Arrive:
-        //            _steering = SteeringTable.Instance.GetArriveSteering(0, )
-        //    }
-        //}
-
         // useful for the CustomInspector
         public KinematicSteering GetSteering()
         {
             return _steering;
+        }
+
+        private CollisionAvoidance GetNewCollisionAvoidance()
+        {
+            if (_collisionAvoidance != null)
+            {
+                SteeringTable.Instance.ReleaseBusySteering(_collisionAvoidance);
+                _collisionAvoidance = null;
+            }
+
+            return (CollisionAvoidance) SteeringTable.Instance.GetFreeSteering(EBehavior.CollisionAvoidance);
         }
 
         private KinematicSteering GetNewSteeringFromTable(EBehavior behavior)
@@ -133,6 +126,19 @@ namespace MonsterAdventure.AI
             Behavior = behavior;
 
             return SteeringTable.Instance.GetFreeSteering(behavior);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if (_collisionAvoidance == null)
+                return;
+
+            Gizmos.color = Color.gray;
+
+            Vector3 spherePosition = _kinematic.GetPosition();
+            spherePosition.z = 100;
+
+            Gizmos.DrawWireSphere(spherePosition, _collisionAvoidance.GetRadius());
         }
 
         // ========================================================================
@@ -181,6 +187,15 @@ namespace MonsterAdventure.AI
             _steering = wander;
         }
 
+        public void AddFaceSteering(Location target)
+        {
+            KinematicFace face = (KinematicFace) GetNewSteeringFromTable(EBehavior.Face);
+
+            face.__KinematicFace__(target);
+
+            _steering = face;
+        }
+
         public void AddPursueSteering(float maxSpeed, Kinematic target, float maxPredictionTime)
         {
             KinematicPursue pursue = (KinematicPursue) GetNewSteeringFromTable(EBehavior.Pursue);
@@ -197,6 +212,24 @@ namespace MonsterAdventure.AI
             evade.__KinematicEvade__(maxSpeed, target, maxPredictionTime);
 
             _steering = evade;
+        }
+
+        public void AddDelegateWanderSteering(float maxSpeed, float wanderOffset,
+            float wanderRadius, float wanderRate)
+        {
+            KinematicDelegateWander delegateWander =
+                (KinematicDelegateWander) GetNewSteeringFromTable(EBehavior.DelegateWander);
+
+            delegateWander.__KinematicDelegateWander__(maxSpeed, wanderOffset, wanderRadius, wanderRate);
+
+            _steering = delegateWander;
+        }
+
+        public void AddCollisionAvoidance(float maxSpeed, float radius)
+        {
+            _collisionAvoidance = GetNewCollisionAvoidance();
+
+            _collisionAvoidance.__CollisionAvoidance__(maxSpeed, radius);
         }
     }
 }
