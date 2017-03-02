@@ -15,7 +15,7 @@ namespace MonsterAdventure.Editor
 
         private bool showOptions = true;
         private string labelMenu;
-        protected GizmosDrawer _gizmosDrawer;
+        //protected GizmosDrawer _gizmosDrawer;
 
         /*
          * \brief   Construct the Option.
@@ -75,7 +75,7 @@ namespace MonsterAdventure.Editor
         {
             if (TryToInit())
             {
-                _gizmosDrawer = GameObject.FindGameObjectWithTag("GizmosDrawer").GetComponent<GizmosDrawer>();
+                //_gizmosDrawer = GameObject.FindGameObjectWithTag("GizmosDrawer").GetComponent<GizmosDrawer>();
                 _isInitialized = true;
 
                 _editorWindow.Repaint();

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
-    public class GizmosDrawer : MonoBehaviour
+    public class GizmosDrawer : MonoSingleton<GizmosDrawer>
     {
         public delegate void GizmosFunction();
 

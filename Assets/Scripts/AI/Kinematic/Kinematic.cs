@@ -133,7 +133,7 @@ namespace MonsterAdventure.AI
             // we keep the old value
             if (GetVelocity().sqrMagnitude > float.Epsilon * float.Epsilon)
             {
-                OrientationInRadian = Mathf.Atan2(GetVelocity().x, GetVelocity().y);
+                OrientationInRadian = Mathf.Atan2(GetVelocity().y, GetVelocity().x);
             }
         }
 
@@ -155,6 +155,11 @@ namespace MonsterAdventure.AI
             Vector2 second = first + direction;
 
             Gizmos.DrawLine(first, second);
+        }
+
+        public override string ToString()
+        {
+            return _rigidBody.name;
         }
     }
 }

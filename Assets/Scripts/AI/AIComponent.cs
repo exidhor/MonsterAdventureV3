@@ -128,19 +128,6 @@ namespace MonsterAdventure.AI
             return SteeringTable.Instance.GetFreeSteering(behavior);
         }
 
-        void OnDrawGizmosSelected()
-        {
-            if (_collisionAvoidance == null)
-                return;
-
-            Gizmos.color = Color.gray;
-
-            Vector3 spherePosition = _kinematic.GetPosition();
-            spherePosition.z = 100;
-
-            Gizmos.DrawWireSphere(spherePosition, _collisionAvoidance.GetRadius());
-        }
-
         // ========================================================================
         // ||                      STEERING CONSTRUCTION                          ||
         // ========================================================================
