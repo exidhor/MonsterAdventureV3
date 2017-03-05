@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(Kinematic))]
+    //[RequireComponent(typeof(Kinematic))]
     public class AIComponent : MonoBehaviour
     {
         public EBehavior Behavior = EBehavior.None;

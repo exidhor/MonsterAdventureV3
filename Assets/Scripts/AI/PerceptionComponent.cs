@@ -6,31 +6,35 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(Kinematic), typeof(CircleCollider2D))]
     public class PerceptionComponent : MonoBehaviour
     {
+        public Kinematic Kinematic;
+
         public Arc VisionDetection;
         public Circle AutoDetection;
 
         private CircleCollider2D _circleCollider;
-        private Kinematic _kinematic;
 
         [SerializeField] private List<Kinematic> _collidedObjects;
         [SerializeField] private List<Kinematic> _perceptibleObjects;
 
-        private List<Kinematic> _collidedBuffer;
-        private List<Kinematic> _perceptibleBuffer;
+        //private List<Kinematic> _collidedBuffer;
+        //private List<Kinematic> _perceptibleBuffer;
 
-        private void Awake()
+        void Awake()
         {
             _collidedObjects = new List<Kinematic>();
             _perceptibleObjects = new List<Kinematic>();
 
-            _collidedBuffer = new List<Kinematic>();
-            _perceptibleBuffer = new List<Kinematic>();
+            //_collidedBuffer = new List<Kinematic>();
+            //_perceptibleBuffer = new List<Kinematic>();
 
-            _kinematic = GetComponent<Kinematic>();
             _circleCollider = GetComponent<CircleCollider2D>();
+
+            if (Kinematic == null)
+            {
+                Debug.LogError("No kinematic set for IntelligenceComponent on " + gameObject.name);
+            }
         }
 
         // has to be called from "FixedUpdate" method
@@ -50,10 +54,10 @@ namespace MonsterAdventure.AI
 
         private void ActualizeFromKinematic()
         {
-            VisionDetection.Center = _kinematic.GetPosition();
-            VisionDetection.AngleDirection = _kinematic.OrientationInDegree;
+            VisionDetection.Center = Kinematic.GetPosition();
+            VisionDetection.AngleDirection = Kinematic.OrientationInDegree;
 
-            AutoDetection.Center = _kinematic.GetPosition();
+            AutoDetection.Center = Kinematic.GetPosition();
         }
 
         private void FilterWithAutoDetection()
@@ -124,6 +128,11 @@ namespace MonsterAdventure.AI
             {
                 _collidedObjects.Add(Collidedkinematic);
             }
+        }
+
+        public List<Kinematic> GetPerceptibles()
+        {
+            return _perceptibleObjects;
         }
     }
 }

@@ -6,9 +6,12 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(InGameIdComponent), typeof(Rigidbody2D))]
     public class Kinematic : MonoBehaviour
     {
+        [HideInInspector]
+        public InGameIdComponent InGameIdComp;
+
         public float OrientationInDegree;
         public float MaxSpeed;
 
@@ -23,10 +26,10 @@ namespace MonsterAdventure.AI
             get { return MaxSpeed*MaxSpeed; }
         }
 
-        private Rigidbody2D _rigidBody;
-
         [SerializeField]
         private float _rotationInDegree;
+
+        private Rigidbody2D _rigidBody;
 
         private float _rotationInRadian
         {
@@ -36,10 +39,12 @@ namespace MonsterAdventure.AI
 
         private void Start()
         {
-            _rigidBody = GetComponent<Rigidbody2D>();
+            InGameIdComp = GetComponent<InGameIdComponent>();
 
             OrientationInDegree = 0;
             _rotationInDegree = 0;
+
+            _rigidBody = GetComponent<Rigidbody2D>();
         }
 
         public void Actualize(SteeringOutput steering, float deltaTime)

@@ -100,5 +100,26 @@ namespace MonsterAdventure
             return new Vector2(to.x - from.x,
                                 to.y - from.y);
         }
+
+        // source : http://stackoverflow.com/questions/101439/the-most-efficient-way-to-implement-an-integer-based-power-function-powint-int
+        public static int Pow(int baseValue, int exp)
+        {
+            int result = 1;
+
+            while (exp != 0)
+            {
+                if ((exp & 1) != 0)
+                    result *= baseValue;
+                exp >>= 1;
+                baseValue *= baseValue;
+            }
+
+            return result;
+        }
+
+        public static int PowerOfTwo(int power)
+        {
+            return Pow(2, power);
+        }
     }
 }

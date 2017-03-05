@@ -53,5 +53,17 @@ namespace MonsterAdventure.AI
             return Linear.x > Mathf.Epsilon || Linear.x < -Mathf.Epsilon
                 || Linear.y > Mathf.Epsilon || Linear.y < - Mathf.Epsilon;
         }
+
+        public void Scale(float value)
+        {
+            Linear *= value;
+            AngularInDegree *= value;
+        }
+
+        public void Add(SteeringOutput steeringOutput)
+        {
+            Linear += steeringOutput.Linear;
+            AngularInDegree += steeringOutput.AngularInDegree;
+        }
     }
 }
