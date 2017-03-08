@@ -6,20 +6,29 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(PerceptionComponent))]
+    [RequireComponent(typeof(PerceptionComponent), typeof(SteeringComponent))]
     public class Targeter : MonoBehaviour
     {
+        [SerializeField]
+        private EGoalAction _currentAction;
+        [SerializeField]
+        private List<Kinematic> _targets;
+
         public List<GoalEntry> Goals;
 
         private PerceptionComponent _perceptionComp;
+        private SteeringComponent _steeringComp;
 
-        private List<GoalEntry> _activeGoals;
+        //private List<GoalEntry> _activeGoals;
+
 
         void Start()
         {
             _perceptionComp = GetComponent<PerceptionComponent>();
+            _steeringComp = GetComponent<SteeringComponent>();
 
-            _activeGoals = new List<GoalEntry>();
+            //_activeGoals = new List<GoalEntry>();
+            _targets = new List<Kinematic>();
         }
 
         public void Actualize()
@@ -28,7 +37,7 @@ namespace MonsterAdventure.AI
             OrderGoals();
 
             // Clear the old active list 
-            _activeGoals.Clear();
+            //_activeGoals.Clear();
 
             // work out with the world extracted data
             ActualizeGoals(_perceptionComp.GetPerceptibles());
@@ -43,24 +52,49 @@ namespace MonsterAdventure.AI
         private void ActualizeGoals(List<Kinematic> perceptibles)
         {
             // By priority, try to find the right behavior from world extracted data
-            float totalWeight = 0;
+            //float totalWeight = 0;
 
-            for (int i = 0; i < Goals.Count && totalWeight < 1; i++)
+            for (int i = 0; i < Goals.Count /*&& totalWeight < 1*/; i++)
             {
                 Goals[i].TrackedTargets = InGameId.Filter<Kinematic>(perceptibles, Goals[i].TargetValue);
 
                 if (Goals[i].TrackedTargets.Count > 0)
                 {
-                    totalWeight += ActivateGoal(Goals[i]);
+                    //totalWeight += ActivateGoal(Goals[i]);
+                    TryToActivateGoal(Goals[i]);
                 }
             }
         }
 
-        private float ActivateGoal(GoalEntry goal)
+        private void TryToActivateGoal(GoalEntry goal)
         {
-            _activeGoals.Add(goal);
+            if (_currentAction == goal.action)
+            {
+                ChangeTargetSteering(goal.TrackedTargets);   
+            }
+            else
+            {
+                ConstructSteering(goal.action, goal.TrackedTargets);
+            }
+        }
 
-            return goal.Weight;
+        private void ChangeTargetSteering(List<Kinematic> targetKinematics)
+        {
+            Debug.Log("Change Target Steering");
+
+            _targets = targetKinematics;
+
+            // todo : call the SteeringComponent
+        }
+
+        private void ConstructSteering(EGoalAction action, List<Kinematic> targetKinematics)
+        {
+            Debug.Log("Construct Steering");
+
+            _currentAction = action;
+            _targets = targetKinematics;
+
+            // todo : call the SteeringComponent
         }
     }
 }

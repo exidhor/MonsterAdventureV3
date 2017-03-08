@@ -20,54 +20,105 @@ namespace MonsterAdventure
         // ...
 
         [SerializeField] private Int32 _id;
-        [SerializeField] private Int32 _idMask;
+        [SerializeField] private Int32 _mask;
 
         public bool Contains(InGameIdValue value)
         {
-            return CheckBit(value.Value) == !value.IsInverse;
+            if (!MaskContains(value.Value))
+                return false;
+
+            return ContainsBit(value.Value) == !value.IsInverse;
         }
 
         public bool Contains(InGameId value)
         {
-            return CheckBit(value._idMask);
+            // 1 - we verify that the field target by the given value
+            // are set in the current objet by comparing the masks
+            if (!MaskContains(value._mask))
+                return false;
+
+            // 2 - we compare the bit differences
+            int bitDifference = _id ^ value._id;
+
+            // 3 - we keep only the differences on the targeted field
+            int filteredValue = bitDifference & value._mask;
+
+            // if no difference, then it's True, the object contains the value,
+            // otherwise, it's false
+            return filteredValue == 0;
+        }
+
+        public bool MaskContains(int mask)
+        {
+            // we check if we add the mask if the idMask is increase or not 
+            return (mask | _mask) == _mask;
+        }
+
+        public void SetMask(int newMask)
+        {
+            _id &= newMask;
+            _mask = newMask;
         }
 
         public void Set(InGameIdValue value, bool state)
         {
-            Set(value.Value, state);
+            SetBit(value.Value, state);
         }
 
-        private void Set(int value, bool state)
+        public void Remove(InGameIdValue value)
+        {
+            SetBitToFalse(value.Value);
+
+            RemoveToMask(value.Value);
+        }
+
+        private void SetBit(int value, bool state)
         {
             if (state)
             {
-                AddBit(value);
+                SetBitToTrue(value);
             }
             else
             {
-                ResetBit(value);
+                SetBitToFalse(value);
             }
+
+            AddToMask(value);
         }
 
-        private bool CheckBit(int value)
+        private bool ContainsBit(int bits)
         {
-            return (_idMask & value) == value;
+            return (_id & bits) == bits;
         }
 
-        private void AddBit(int value)
+        private void SetBitToTrue(int bits)
         {
-            _idMask |= value;
+            _id |= bits;
         }
 
-        private void ResetBit(int value)
+        private void SetBitToFalse(int bits)
         {
-            int inverse = ~value;
-            _idMask &= inverse;
+            _id &= (~bits);
+        }
+
+        private void AddToMask(int bits)
+        {
+            _mask |= bits;
+        }
+
+        private void RemoveToMask(int bits)
+        {
+            _mask &= (~bits);
+        }
+
+        public int GetId()
+        {
+            return _id;
         }
 
         public int GetMask()
         {
-            return _idMask;
+            return _mask;
         }
 
         /// <summary>

@@ -31,6 +31,11 @@ namespace MonsterAdventure
             return new InGameIdValue(id.Value, !id.IsInverse);
         }
 
+        public InGameIdValue GetInverseCopy()
+        {
+            return new InGameIdValue(_value, !_isInverse);
+        }
+
         private InGameIdValue(int value, bool isInverse)
         {
             _value = value;

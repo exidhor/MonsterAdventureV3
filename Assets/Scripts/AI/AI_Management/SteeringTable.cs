@@ -77,7 +77,7 @@ namespace MonsterAdventure.AI
             Pool pool = _table.GetByKey(behavior);
 
             _poolRequestBuffer.InitAllocation(pool, 1);
-            PoolAllocator.Instance.DoInstancePoolRequest(_poolRequestBuffer);
+            PoolAllocator.Instance.ResolveInstantPoolRequest(_poolRequestBuffer);
 
             KinematicSteering result = _poolRequestBuffer.PoolObjects[0].GameObject.GetComponent<KinematicSteering>();
             result.SetPoolObject(_poolRequestBuffer.PoolObjects[0]);
@@ -89,7 +89,7 @@ namespace MonsterAdventure.AI
         {
             _poolRequestBuffer.InitRelease(steering.GetPoolObject());
 
-            PoolAllocator.Instance.DoInstancePoolRequest(_poolRequestBuffer);
+            PoolAllocator.Instance.ResolveInstantPoolRequest(_poolRequestBuffer);
         }
 
         // use it to iterate in the table

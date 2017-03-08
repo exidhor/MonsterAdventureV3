@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
+    /// <summary>
+    /// Store the Data necessary to create a Pool
+    /// into the PoolTable 
+    /// </summary>
     [Serializable]
     public class PoolEntry
     {
