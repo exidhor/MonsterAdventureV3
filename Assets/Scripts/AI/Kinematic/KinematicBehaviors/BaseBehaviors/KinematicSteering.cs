@@ -53,7 +53,5 @@ namespace MonsterAdventure.AI
         {
             return _poolObject;
         }
-
-
     }
 }

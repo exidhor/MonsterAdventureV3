@@ -14,6 +14,7 @@ namespace MonsterAdventure.AI
         None,
         Wander,
         Flee,
+        Seek,
         Pursue,
         Eat, 
         Attack

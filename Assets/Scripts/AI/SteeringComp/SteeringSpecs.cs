@@ -18,6 +18,12 @@ namespace MonsterAdventure.AI
         [SerializeField] private float _wanderRadius;
         [SerializeField] private float _wanderRate;
 
+        // variable which is stored and modify
+        public float WanderOrientation;
+
+        //private Kinematic _kinematic;
+        //private Location _targetLocation;
+
         public float MaxSpeed
         {
             get { return _maxSpeed; }
@@ -57,5 +63,26 @@ namespace MonsterAdventure.AI
         {
             get { return _wanderRate; }
         }
+
+        //public Vector2 TargetPosition
+        //{
+        //    get
+        //    {
+        //        if (_kinematic != null)
+        //        {
+        //            return _kinematic.GetPosition();
+        //        }
+
+        //        return _targetLocation.GetPosition();
+        //    }
+        //}
+
+        //public Vector2 TargetVelocity
+        //{
+        //    get
+        //    {
+        //        return _kinematic.GetVelocity();
+        //    }
+        //}
     }
 }

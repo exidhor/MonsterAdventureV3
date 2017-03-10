@@ -10,7 +10,7 @@ namespace MonsterAdventure.AI
     public class Targeter : MonoBehaviour
     {
         [SerializeField]
-        private EGoalAction _currentAction;
+        private EBehavior _currentAction;
         [SerializeField]
         private List<Kinematic> _targets;
 
@@ -62,39 +62,43 @@ namespace MonsterAdventure.AI
                 {
                     //totalWeight += ActivateGoal(Goals[i]);
                     TryToActivateGoal(Goals[i]);
+                    return;
                 }
             }
+
+            // if no goal was found, tell it to the SteeringComp
+            _steeringComp.SetActiveBehavior(EBehavior.Wander, new List<Kinematic>(), 1f);
         }
 
         private void TryToActivateGoal(GoalEntry goal)
         {
-            if (_currentAction == goal.action)
-            {
-                ChangeTargetSteering(goal.TrackedTargets);   
-            }
-            else
-            {
-                ConstructSteering(goal.action, goal.TrackedTargets);
-            }
+            //if (_currentAction == goal.behavior)
+            //{
+            //    ChangeTargetSteering(goal.TrackedTargets);   
+            //}
+            //else
+            //{
+                ConstructSteering(goal.behavior, goal.TrackedTargets);
+            //}
         }
 
-        private void ChangeTargetSteering(List<Kinematic> targetKinematics)
-        {
-            Debug.Log("Change Target Steering");
+        //private void ChangeTargetSteering(List<Kinematic> targetKinematics)
+        //{
+        //    Debug.Log("Change Target Steering");
 
+        //    _targets = targetKinematics;
+
+        //    // todo : call the SteeringComponent
+        //}
+
+        private void ConstructSteering(EBehavior behavior, List<Kinematic> targetKinematics)
+        {
+            //Debug.Log("Construct Steering");
+
+            _currentAction = behavior;
             _targets = targetKinematics;
 
-            // todo : call the SteeringComponent
-        }
-
-        private void ConstructSteering(EGoalAction action, List<Kinematic> targetKinematics)
-        {
-            Debug.Log("Construct Steering");
-
-            _currentAction = action;
-            _targets = targetKinematics;
-
-            // todo : call the SteeringComponent
+            _steeringComp.SetActiveBehavior(behavior, targetKinematics, 1f);
         }
     }
 }

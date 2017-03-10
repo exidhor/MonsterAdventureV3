@@ -50,7 +50,7 @@ namespace MonsterAdventure.AI
             _targeter.Actualize();
 
             // update the steering
-           _steeringComp.Actualize(Kinematic);
+           _steeringComp.Actualize(Kinematic, Time.fixedDeltaTime);
         }
 
         /// <summary>

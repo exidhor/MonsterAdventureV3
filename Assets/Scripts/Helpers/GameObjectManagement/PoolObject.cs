@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class PoolObject : PoolRegister
     {

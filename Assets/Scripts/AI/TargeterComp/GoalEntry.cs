@@ -8,7 +8,7 @@ namespace MonsterAdventure.AI
     [Serializable]
     public class GoalEntry
     {
-        public EGoalAction action;
+        public EBehavior behavior;
         public int Priority;
         //public float Weight = 1;
         //public int GroupId = 0;

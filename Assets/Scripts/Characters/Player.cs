@@ -8,6 +8,11 @@ namespace MonsterAdventure
 {
     public class Player : MovingObjects
     {
+        public Animator Animator;
+
+        private int _lastHorizontal;
+        private int _lastVertical;
+
         protected override void Start()
         {
             base.Start();
@@ -24,12 +29,25 @@ namespace MonsterAdventure
             int horizontal = 0;
             int vertical = 0;
 
-            horizontal = (int)Input.GetAxisRaw("Horizontal");
-            vertical = (int)Input.GetAxisRaw("Vertical");
+            horizontal = (int) Input.GetAxisRaw("Horizontal");
+            vertical = (int) Input.GetAxisRaw("Vertical");
+
+            //Debug.Log("Horizontal : " + horizontal);
+            //Debug.Log("Vertical : " + vertical);
 
             if (horizontal != 0)
             {
                 vertical = 0;
+            }
+
+            if ((horizontal != 0 || vertical != 0)
+                && (horizontal != _lastHorizontal || vertical != _lastVertical))
+            {
+                Animator.SetInteger("Horizontal", horizontal);
+                Animator.SetInteger("Vertical", vertical);
+                Animator.SetTrigger("NeedUpdate");
+
+                //Debug.Log("Animation change : " + horizontal + " | " + vertical);
             }
 
             if (horizontal != 0 || vertical != 0)
@@ -37,6 +55,9 @@ namespace MonsterAdventure
                 RaycastHit2D hit;
                 Move(horizontal, vertical, out hit);
             }
+
+            _lastHorizontal = horizontal;
+            _lastVertical = vertical;
         }
 
         protected override void OnCantMove<T>(T component)
