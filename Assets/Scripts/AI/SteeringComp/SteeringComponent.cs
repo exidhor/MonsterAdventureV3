@@ -10,17 +10,21 @@ namespace MonsterAdventure.AI
     {
         public SteeringSpecs SteeringSpecs;
 
-        public List<InternalBehavior> BehaviorAndWeights;
+        public List<InternalBehavior> InternalBehaviors;
 
         public InternalBehavior ActiveBehavior;
 
-        private SteeringOutput _outputResult;
-        private SteeringOutput _outputBuffer;
+        private List<WeightedSteeringOutput> _weightedOutputs;
+
+        //private SteeringOutput _outputResult;
+        //private SteeringOutput _outputBuffer;
 
         private void Awake()
         {
-            _outputResult = new SteeringOutput();
-            _outputBuffer = new SteeringOutput();
+            //_outputResult = new SteeringOutput();
+            //_outputBuffer = new SteeringOutput();
+
+            _weightedOutputs = new List<WeightedSteeringOutput>();
         }
 
         public void SetActiveBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
@@ -30,55 +34,67 @@ namespace MonsterAdventure.AI
             ActiveBehavior.Weight = weight;
         }
 
-        public void Actualize(Kinematic character, float deltaTime)
+        public void ActualizeSteering(Kinematic character)
         {
-            float totalWeight = 0;
-            _outputBuffer.Reset();
-            _outputResult.Reset();
+            SteeringOutput outputBuffer;
 
-            for (int i = 0; i < BehaviorAndWeights.Count; i++)
+            float totalWeight = 0;
+            //_outputBuffer.Reset();
+            //_outputResult.Reset();
+            _weightedOutputs.Clear();
+
+            for (int i = 0; i < InternalBehaviors.Count; i++)
             {
-                // fill the output buffer with the steering scaled with the weight
-                FillOutputBuffer(BehaviorAndWeights[i], character);
+                // fill the output buffer with the steering
+                FillOutput(InternalBehaviors[i], character, out outputBuffer);
 
                 // add the output to the result
-                _outputResult.Add(_outputBuffer);
+                _weightedOutputs.Add(new WeightedSteeringOutput(outputBuffer, InternalBehaviors[i].Weight));
 
                 // increase the total weight
-                totalWeight += BehaviorAndWeights[i].Weight;
+                totalWeight += InternalBehaviors[i].Weight;
             }
 
             // do the activeBehavior
-            FillOutputBuffer(ActiveBehavior, character);
-            character.Actualize(_outputBuffer, deltaTime);
+            FillOutput(ActiveBehavior, character, out outputBuffer);
 
-            // TODO : find a way to work with "instant orientation" and "is oriented" and the "result output buffer"
+            _weightedOutputs.Add(new WeightedSteeringOutput(outputBuffer, ActiveBehavior.Weight));
 
-            _outputResult.Add(_outputBuffer);
+            //_outputResult.Add(_outputBuffer);
             totalWeight += ActiveBehavior.Weight;
 
             // Divide the accumulated output by the total weight
             if (totalWeight > 0)
             {
-                totalWeight = 1f/totalWeight;
+                //totalWeight = 1f/totalWeight;
 
-                _outputResult.Scale(totalWeight);
+                //_outputResult.Scale(totalWeight);
+
+                for (int i = 0; i < _weightedOutputs.Count; i++)
+                {
+                    _weightedOutputs[i].Scale(totalWeight);
+                }
             }
-
-
         }
 
-        private void FillOutputBuffer(InternalBehavior internalBehavior, Kinematic character)
+        public void ApplySteeringOnKinematic(Kinematic kinematic, float deltaTime)
         {
-            // clear the old values
-            _outputBuffer.Reset();
+            for (int i = 0; i < _weightedOutputs.Count; i++)
+            {
+                kinematic.Actualize(_weightedOutputs[i].Output, deltaTime);
+            }
+        }
+
+        private void FillOutput(InternalBehavior internalBehavior, Kinematic character, out SteeringOutput toFill)
+        {
+            toFill = new SteeringOutput();
 
             // Get the steering
             //behaviorAndWeight.Steering.ConfigureSteeringOutput(ref _outputBuffer, character);
-            ApplySteering(internalBehavior.Behavior, character, internalBehavior.Targets);
+            GiveSteering(internalBehavior.Behavior, character, internalBehavior.Targets, ref toFill);
 
             // scale it with the weight
-            _outputBuffer.Scale(internalBehavior.Weight);
+            //_outputBuffer.Scale(internalBehavior.Weight);
         }
 
         //private KinematicSteering AddSteering(EBehavior behavior, float weight = 1f)
@@ -89,15 +105,13 @@ namespace MonsterAdventure.AI
         //    return steering;
         //}
 
-        public SteeringOutput GetSteeringOutput()
-        {
-            return _outputResult;
-        }
+        //public SteeringOutput GetSteeringOutput()
+        //{
+        //    return _outputResult;
+        //}
 
-        private void ApplySteering(EBehavior behavior, Kinematic character, List<Kinematic> target)
+        private void GiveSteering(EBehavior behavior, Kinematic character, List<Kinematic> target, ref SteeringOutput toFill)
         {
-            _outputBuffer.Reset();
-
             Kinematic theClosest = null;
 
             switch (behavior)
@@ -107,7 +121,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Seek(ref _outputBuffer, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Seek(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -116,7 +130,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Flee(ref _outputBuffer, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -125,7 +139,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Arrive(ref _outputBuffer, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -134,7 +148,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Face(ref _outputBuffer, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Face(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -143,7 +157,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Pursue(ref _outputBuffer, character, SteeringSpecs, theClosest);
+                        Behavior.Pursue(ref toFill, character, SteeringSpecs, theClosest);
                     }
                     break;
 
@@ -152,12 +166,12 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Evade(ref _outputBuffer, character, SteeringSpecs, theClosest);
+                        Behavior.Evade(ref toFill, character, SteeringSpecs, theClosest);
                     }
                     break;
 
                 case EBehavior.Wander:
-                    Behavior.Wander(ref _outputBuffer, character, SteeringSpecs);
+                    Behavior.Wander(ref toFill, character, SteeringSpecs);
                     break;
             }
         }

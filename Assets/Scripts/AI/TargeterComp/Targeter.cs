@@ -11,33 +11,22 @@ namespace MonsterAdventure.AI
     {
         [SerializeField]
         private EBehavior _currentAction;
-        [SerializeField]
-        private List<Kinematic> _targets;
 
         public List<GoalEntry> Goals;
 
         private PerceptionComponent _perceptionComp;
         private SteeringComponent _steeringComp;
 
-        //private List<GoalEntry> _activeGoals;
-
-
         void Start()
         {
             _perceptionComp = GetComponent<PerceptionComponent>();
             _steeringComp = GetComponent<SteeringComponent>();
-
-            //_activeGoals = new List<GoalEntry>();
-            _targets = new List<Kinematic>();
         }
 
         public void Actualize()
         {
             // Verify if the goals are well ordoned
             OrderGoals();
-
-            // Clear the old active list 
-            //_activeGoals.Clear();
 
             // work out with the world extracted data
             ActualizeGoals(_perceptionComp.GetPerceptibles());
@@ -96,7 +85,6 @@ namespace MonsterAdventure.AI
             //Debug.Log("Construct Steering");
 
             _currentAction = behavior;
-            _targets = targetKinematics;
 
             _steeringComp.SetActiveBehavior(behavior, targetKinematics, 1f);
         }

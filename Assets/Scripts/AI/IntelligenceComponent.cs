@@ -31,17 +31,23 @@ namespace MonsterAdventure.AI
             }
         }
 
-        private void FixedUpdate()
+        void OnEnable()
         {
-            // todo : remove this, it's temporary
-            PreUpdate();
-            PostUpdate();
+            IntelligenceEngine.Instance.Register(this);
+        }
+
+        void OnDisable()
+        {
+            if (IntelligenceEngine.InternalInstance != null)
+            {
+                IntelligenceEngine.Instance.Unregister(this);
+            }
         }
 
         /// <summary>
         /// Update and compute the steering without moving the object
         /// </summary>
-        private void PreUpdate()
+        public void PreUpdate()
         {
             // actualize the known data from the world
             _percetionComp.Actualize();
@@ -50,15 +56,15 @@ namespace MonsterAdventure.AI
             _targeter.Actualize();
 
             // update the steering
-           _steeringComp.Actualize(Kinematic, Time.fixedDeltaTime);
+           _steeringComp.ActualizeSteering(Kinematic);
         }
 
         /// <summary>
         /// Move the object (touch to the physics)
         /// </summary>
-        private void PostUpdate()
+        public void PostUpdate(float deltaTime)
         {
-            // todo : apply the steerings on the kinematic body
+            _steeringComp.ApplySteeringOnKinematic(Kinematic, deltaTime);
         }
     }
 }

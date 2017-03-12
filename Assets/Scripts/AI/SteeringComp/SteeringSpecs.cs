@@ -17,6 +17,7 @@ namespace MonsterAdventure.AI
         [SerializeField] private float _maxWanderOffset;
         [SerializeField] private float _wanderRadius;
         [SerializeField] private float _wanderRate;
+        [SerializeField] private float _avoidanceRadius;
 
         // variable which is stored and modify
         public float WanderOrientation;
@@ -62,6 +63,11 @@ namespace MonsterAdventure.AI
         public float WanderRate
         {
             get { return _wanderRate; }
+        }
+
+        public float AvoidanceRadius
+        {
+            get { return _avoidanceRadius; }
         }
 
         //public Vector2 TargetPosition

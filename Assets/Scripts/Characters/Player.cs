@@ -2,67 +2,89 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonsterAdventure.AI;
 using UnityEngine;
 
 namespace MonsterAdventure
 {
-    public class Player : MovingObjects
+    [RequireComponent(typeof(AnimatorComponent), typeof(Kinematic))]
+    public class Player : MonoBehaviour
     {
-        public Animator Animator;
+        private bool _lastWasLeft;
+        private bool _lastWasRight;
+        private bool _lastWasFront;
+        private bool _lastWasBack;
 
-        private int _lastHorizontal;
-        private int _lastVertical;
+        private AnimatorComponent _animator;
+        private Kinematic _kinematic;
 
-        protected override void Start()
+        void Awake()
         {
-            base.Start();
+            _animator = GetComponent<AnimatorComponent>();
+            _kinematic = GetComponent<Kinematic>();
+
+            _lastWasLeft = false;
+            _lastWasRight = false;
+            _lastWasFront = true;
+            _lastWasBack = false;
+
+            _animator.SetCurrentAnimation("Front");
         }
 
-        protected override void AttemptMove<T>(int xDir, int yDir)
+        void FixedUpdate()
         {
-            // when player move
-            base.AttemptMove<T>(xDir, yDir);
-        }
-
-        private void FixedUpdate()
-        {
-            int horizontal = 0;
-            int vertical = 0;
+            float horizontal = 0;
+            float vertical = 0;
 
             horizontal = (int) Input.GetAxisRaw("Horizontal");
             vertical = (int) Input.GetAxisRaw("Vertical");
 
-            //Debug.Log("Horizontal : " + horizontal);
-            //Debug.Log("Vertical : " + vertical);
+            bool isDiagonal = false;
 
-            if (horizontal != 0)
+            if (horizontal != 0 && vertical != 0)
             {
-                vertical = 0;
+                horizontal /= 2;
+                vertical /= 2;
+
+                isDiagonal = true;
             }
 
-            if ((horizontal != 0 || vertical != 0)
-                && (horizontal != _lastHorizontal || vertical != _lastVertical))
+            if (horizontal > 0 && !_lastWasRight && (!isDiagonal || (isDiagonal && _lastWasLeft)))
             {
-                Animator.SetInteger("Horizontal", horizontal);
-                Animator.SetInteger("Vertical", vertical);
-                Animator.SetTrigger("NeedUpdate");
-
-                //Debug.Log("Animation change : " + horizontal + " | " + vertical);
+                _animator.SetCurrentAnimation("Right");
+                ResetBuffers();
+                _lastWasRight = true;
+            }
+            else if (horizontal < 0 && !_lastWasLeft && (!isDiagonal || (isDiagonal && _lastWasRight)))
+            {
+                _animator.SetCurrentAnimation("Left");
+                ResetBuffers();
+                _lastWasLeft = true;
+            }
+            else if (vertical > 0 && !_lastWasBack && (!isDiagonal || (isDiagonal && _lastWasFront)))
+            {
+                _animator.SetCurrentAnimation("Back");
+                ResetBuffers();
+                _lastWasBack = true;
+            }
+            else if (vertical < 0 && !_lastWasFront && (!isDiagonal || (isDiagonal && _lastWasBack)))
+            {
+                _animator.SetCurrentAnimation("Front");
+                ResetBuffers();
+                _lastWasFront = true;
             }
 
-            if (horizontal != 0 || vertical != 0)
-            {
-                RaycastHit2D hit;
-                Move(horizontal, vertical, out hit);
-            }
-
-            _lastHorizontal = horizontal;
-            _lastVertical = vertical;
+            SteeringOutput output = new SteeringOutput();
+            output.Linear = new Vector2(horizontal*1000, vertical*1000);
+            _kinematic.Actualize(output, Time.fixedDeltaTime);
         }
 
-        protected override void OnCantMove<T>(T component)
+        private void ResetBuffers()
         {
-            //Wall hitWall = component as Wall;
+            _lastWasRight = false;
+            _lastWasLeft = false;
+            _lastWasBack = false;
+            _lastWasFront = false;
         }
     }
 }
