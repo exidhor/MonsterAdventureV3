@@ -22,12 +22,13 @@ namespace MonsterAdventure.Editor
 
             _arc = comp.VisionDetection;
 
+            Vector2 arcCenter = _arc.Center;
+
             //Vector2 startArc = GizmosHelper.ConvertToGUICoordinate(arc.Start);
             Vector2 startArc = _arc.Start;
             //Vector2 endArc = GizmosHelper.ConvertToGUICoordinate(arc.End);
             Vector2 endArc = _arc.End;
             //Vector2 arcCenter = GizmosHelper.ConvertToGUICoordinate(arc.Center);
-            Vector2 arcCenter = _arc.Center;
 
             Handles.DrawWireArc(arcCenter, 
                 Vector3.forward, 

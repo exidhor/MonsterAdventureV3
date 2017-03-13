@@ -10,7 +10,7 @@ namespace MonsterAdventure
     public class DepthComponent : MonoBehaviour
     {
         private SpriteRenderer _spriteRenderer;
-        private float _offset;
+        private Vector3 _offset;
 
         void Awake()
         {
@@ -22,10 +22,10 @@ namespace MonsterAdventure
         void LateUpdate()
         {
             if (_spriteRenderer.isVisible)
-                _spriteRenderer.sortingOrder = (int) Camera.main.WorldToScreenPoint(_spriteRenderer.bounds.min).y*-1;
+                _spriteRenderer.sortingOrder = GetSortingOrder();
         }
 
-        private float ComputeOffset()
+        private Vector2 ComputeOffset()
         {
             Collider2D[] colliders = GetComponents<Collider2D>();
 
@@ -45,10 +45,15 @@ namespace MonsterAdventure
 
             if (lowest == null)
             {
-                return 0;
+                return Vector2.zero;
             }
 
-            return lowestY - _spriteRenderer.bounds.min.y;
+            return new Vector2(0, lowestY - _spriteRenderer.bounds.min.y);
+        }
+
+        private int GetSortingOrder()
+        {
+            return (int) Camera.main.WorldToScreenPoint(_spriteRenderer.bounds.min + _offset).y*-1;
         }
     }
 }

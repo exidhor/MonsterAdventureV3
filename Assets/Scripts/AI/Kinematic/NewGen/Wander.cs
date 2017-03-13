@@ -10,7 +10,7 @@ namespace MonsterAdventure.AI
     {
         public static void Wander(ref SteeringOutput output, Kinematic character, SteeringSpecs specs)
         {
-            output.IsOriented = true;
+            //output.IsOriented = true;
 
             // calculate the target to delegate to face
 
@@ -23,16 +23,24 @@ namespace MonsterAdventure.AI
             Vector2 characterOrientationAsVector = character.GetOrientationAsVector();
 
             // calculate the center of the wander circle
-            Vector2 targetPosition = character.GetPosition() + specs.MaxWanderOffset * characterOrientationAsVector;
+            //Vector2 targetMovement = character.GetPosition() + specs.MaxWanderOffset * characterOrientationAsVector;
+            Vector2 targetMovement = specs.MaxWanderOffset * characterOrientationAsVector;
 
             // calculate the target location
-            targetPosition += specs.WanderRadius * MathHelper.GetDirectionFromAngle(
+            targetMovement += specs.WanderRadius * MathHelper.GetDirectionFromAngle(
                 targetOrientationInDegree * Mathf.Deg2Rad);
 
-            Face(ref output, character, specs, targetPosition);
+            //Face(ref output, character, specs, targetPosition);
 
             // now set the speed
-            output.Linear = specs.MaxSpeed * characterOrientationAsVector;
+            // output.AngularInDegree -= character.OrientationInDegree;
+            targetMovement.Normalize();
+            output.Linear = specs.MaxSpeed * targetMovement;
+        }
+
+        private static void ResetWander(SteeringSpecs specs)
+        {
+            specs.WanderOrientation = 0;
         }
     }
 }

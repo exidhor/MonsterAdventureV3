@@ -12,26 +12,30 @@ namespace MonsterAdventure.AI
 
         public List<InternalBehavior> InternalBehaviors;
 
-        public InternalBehavior ActiveBehavior;
+        //public InternalBehavior ActiveBehavior;
 
         private List<WeightedSteeringOutput> _weightedOutputs;
 
-        //private SteeringOutput _outputResult;
-        //private SteeringOutput _outputBuffer;
-
         private void Awake()
         {
-            //_outputResult = new SteeringOutput();
-            //_outputBuffer = new SteeringOutput();
-
             _weightedOutputs = new List<WeightedSteeringOutput>();
         }
 
-        public void SetActiveBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
+        //public void SetActiveBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
+        //{
+        //    ActiveBehavior.Behavior = behavior;
+        //    ActiveBehavior.Targets = targets;
+        //    ActiveBehavior.Weight = weight;
+        //}
+
+        public void ClearBehaviors()
         {
-            ActiveBehavior.Behavior = behavior;
-            ActiveBehavior.Targets = targets;
-            ActiveBehavior.Weight = weight;
+            InternalBehaviors.Clear();
+        }
+
+        public void AddBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
+        {
+            InternalBehaviors.Add(new InternalBehavior(behavior, targets, weight));
         }
 
         public void ActualizeSteering(Kinematic character)
@@ -39,8 +43,6 @@ namespace MonsterAdventure.AI
             SteeringOutput outputBuffer;
 
             float totalWeight = 0;
-            //_outputBuffer.Reset();
-            //_outputResult.Reset();
             _weightedOutputs.Clear();
 
             for (int i = 0; i < InternalBehaviors.Count; i++)
@@ -56,20 +58,15 @@ namespace MonsterAdventure.AI
             }
 
             // do the activeBehavior
-            FillOutput(ActiveBehavior, character, out outputBuffer);
+            //FillOutput(ActiveBehavior, character, out outputBuffer);
 
-            _weightedOutputs.Add(new WeightedSteeringOutput(outputBuffer, ActiveBehavior.Weight));
+            //_weightedOutputs.Add(new WeightedSteeringOutput(outputBuffer, ActiveBehavior.Weight));
 
-            //_outputResult.Add(_outputBuffer);
-            totalWeight += ActiveBehavior.Weight;
+            //totalWeight += ActiveBehavior.Weight;
 
             // Divide the accumulated output by the total weight
             if (totalWeight > 0)
             {
-                //totalWeight = 1f/totalWeight;
-
-                //_outputResult.Scale(totalWeight);
-
                 for (int i = 0; i < _weightedOutputs.Count; i++)
                 {
                     _weightedOutputs[i].Scale(totalWeight);
@@ -90,25 +87,8 @@ namespace MonsterAdventure.AI
             toFill = new SteeringOutput();
 
             // Get the steering
-            //behaviorAndWeight.Steering.ConfigureSteeringOutput(ref _outputBuffer, character);
             GiveSteering(internalBehavior.Behavior, character, internalBehavior.Targets, ref toFill);
-
-            // scale it with the weight
-            //_outputBuffer.Scale(internalBehavior.Weight);
         }
-
-        //private KinematicSteering AddSteering(EBehavior behavior, float weight = 1f)
-        //{
-        //    KinematicSteering steering = SteeringTable.Instance.GetFreeSteering(behavior);
-        //    BehaviorAndWeights.Add(new BehaviorAndWeight(steering, weight));
-
-        //    return steering;
-        //}
-
-        //public SteeringOutput GetSteeringOutput()
-        //{
-        //    return _outputResult;
-        //}
 
         private void GiveSteering(EBehavior behavior, Kinematic character, List<Kinematic> target, ref SteeringOutput toFill)
         {

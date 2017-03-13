@@ -11,9 +11,11 @@ namespace MonsterAdventure.AI
         public EBehavior behavior;
         public int Priority;
         public float Weight = 1;
-        public int GroupId = 0;
-        public InGameId TargetValue;
+        public string GroupKey = "";
 
+        public bool IsDefault = false;
+
+        public InGameId TargetValue;
         public List<Kinematic> TrackedTargets;
     }
 }

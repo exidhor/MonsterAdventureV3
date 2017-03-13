@@ -61,6 +61,11 @@ namespace MonsterAdventure
             return _map.Keys.ElementAt(index);
         }
 
+        public bool ContainsKey(Key key)
+        {
+            return _map.ContainsKey(key);
+        }
+
         public void Clear()
         {
             _list.Clear();

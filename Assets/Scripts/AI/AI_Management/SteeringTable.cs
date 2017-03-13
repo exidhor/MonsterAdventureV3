@@ -27,7 +27,7 @@ namespace MonsterAdventure.AI
 
             _poolRequestBuffer = new PoolRequest();
 
-            ConstructPools();
+            //ConstructPools();
         }
 
         private void Start()
