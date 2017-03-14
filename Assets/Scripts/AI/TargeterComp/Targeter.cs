@@ -6,11 +6,9 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(PerceptionComponent), typeof(SteeringComponent))]
+    [RequireComponent(typeof(IntelligenceComponent), typeof(SteeringComponent))]
     public class Targeter : MonoBehaviour
     {
-        [SerializeField] private EBehavior _currentAction;
-
         public List<GoalEntry> Goals;
 
         private MappedList<string, List<GoalEntry>> _sortedGoals;
@@ -20,7 +18,7 @@ namespace MonsterAdventure.AI
 
         void Start()
         {
-            _perceptionComp = GetComponent<PerceptionComponent>();
+            _perceptionComp = GetComponentInChildren<PerceptionComponent>();
             _steeringComp = GetComponent<SteeringComponent>();
 
             _sortedGoals = new MappedList<string, List<GoalEntry>>();
@@ -55,9 +53,6 @@ namespace MonsterAdventure.AI
 
         public void Actualize()
         {
-            // Verify if the goals are well ordoned
-            //OrderGoals();
-
             // work out with the world extracted data and 
             // send the active goal to the steeringComponent
             ActualizeGoals(_perceptionComp.GetPerceptibles());
@@ -69,23 +64,8 @@ namespace MonsterAdventure.AI
             Goals.Sort((x, y) => y.Priority.CompareTo(x.Priority));
         }
 
-        private void ActualizeGoals(List<Kinematic> perceptibles)
+        private void ActualizeGoals(List<Presence> perceptibles)
         {
-            // By priority, try to find the right behavior from world extracted data
-            //float totalWeight = 0;
-
-            //for (int i = 0; i < Goals.Count /*&& totalWeight < 1*/; i++)
-            //{
-            //    Goals[i].TrackedTargets = InGameId.Filter<Kinematic>(perceptibles, Goals[i].TargetValue);
-
-            //    if (Goals[i].TrackedTargets.Count > 0)
-            //    {
-            //        //totalWeight += ActivateGoal(Goals[i]);
-            //        TryToActivateGoal(Goals[i]);
-            //        return;
-            //    }
-            //}
-
             // prepare the steeringComponent to receive the new goals
             _steeringComp.ClearBehaviors();
 
@@ -98,7 +78,7 @@ namespace MonsterAdventure.AI
 
                 for (int listIndex = 0; listIndex < goalList.Count; listIndex++)
                 {
-                    goalList[listIndex].TrackedTargets = InGameId.Filter<Kinematic>(perceptibles, goalList[listIndex].TargetValue);
+                    goalList[listIndex].TrackedTargets = InGameId.Filter<Presence>(perceptibles, goalList[listIndex].TargetValue, true);
 
                     if (goalList[listIndex].TrackedTargets.Count > 0 || goalList[listIndex].IsDefault)
                     {
@@ -117,35 +97,7 @@ namespace MonsterAdventure.AI
 
         private void ActivateGoal(GoalEntry goal)
         {
-            //if (_currentAction == goal.behavior)
-            //{
-            //    ChangeTargetSteering(goal.TrackedTargets);   
-            //}
-            //else
-            //{
-            //ConstructSteering(goal.behavior, goal.TrackedTargets);
-
             _steeringComp.AddBehavior(goal.behavior, goal.TrackedTargets, goal.Weight);
-            //}
         }
-
-        //private void ChangeTargetSteering(List<Kinematic> targetKinematics)
-        //{
-        //    Debug.Log("Change Target Steering");
-
-        //    _targets = targetKinematics;
-
-        //    // todo : call the SteeringComponent
-        //}
-
-        //private void ConstructSteering(EBehavior behavior, List<Kinematic> targetKinematics, float weight)
-        //{
-        //    //Debug.Log("Construct Steering");
-
-        //    _currentAction = behavior;
-
-        //    _steeringComp.AddBehavior(behavior, targetKinematics, weight);
-        //    //_steeringComp.SetActiveBehavior(behavior, targetKinematics, 1f);
-        //}
     }
 }

@@ -12,8 +12,6 @@ namespace MonsterAdventure.AI
 
         public List<InternalBehavior> InternalBehaviors;
 
-        //public InternalBehavior ActiveBehavior;
-
         private List<WeightedSteeringOutput> _weightedOutputs;
 
         private void Awake()
@@ -21,19 +19,12 @@ namespace MonsterAdventure.AI
             _weightedOutputs = new List<WeightedSteeringOutput>();
         }
 
-        //public void SetActiveBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
-        //{
-        //    ActiveBehavior.Behavior = behavior;
-        //    ActiveBehavior.Targets = targets;
-        //    ActiveBehavior.Weight = weight;
-        //}
-
         public void ClearBehaviors()
         {
             InternalBehaviors.Clear();
         }
 
-        public void AddBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
+        public void AddBehavior(EBehavior behavior, List<Presence> targets, float weight)
         {
             InternalBehaviors.Add(new InternalBehavior(behavior, targets, weight));
         }
@@ -56,13 +47,6 @@ namespace MonsterAdventure.AI
                 // increase the total weight
                 totalWeight += InternalBehaviors[i].Weight;
             }
-
-            // do the activeBehavior
-            //FillOutput(ActiveBehavior, character, out outputBuffer);
-
-            //_weightedOutputs.Add(new WeightedSteeringOutput(outputBuffer, ActiveBehavior.Weight));
-
-            //totalWeight += ActiveBehavior.Weight;
 
             // Divide the accumulated output by the total weight
             if (totalWeight > 0)
@@ -90,9 +74,9 @@ namespace MonsterAdventure.AI
             GiveSteering(internalBehavior.Behavior, character, internalBehavior.Targets, ref toFill);
         }
 
-        private void GiveSteering(EBehavior behavior, Kinematic character, List<Kinematic> target, ref SteeringOutput toFill)
+        private void GiveSteering(EBehavior behavior, Kinematic character, List<Presence> target, ref SteeringOutput toFill)
         {
-            Kinematic theClosest = null;
+            Presence theClosest = null;
 
             switch (behavior)
             {
@@ -101,7 +85,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Seek(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Seek(ref toFill, character, SteeringSpecs, theClosest.Position);
                     }
                     break;
 
@@ -110,7 +94,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.Position);
                     }
                     break;
 
@@ -119,7 +103,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.Position);
                     }
                     break;
 
@@ -128,25 +112,39 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Face(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
+                        Behavior.Face(ref toFill, character, SteeringSpecs, theClosest.Position);
                     }
                     break;
 
                 case EBehavior.Pursue:
                     theClosest = GetTheClosest(target, character);
 
-                    if (theClosest != null)
+                    if (theClosest == null)
+                        break;
+
+                    if (theClosest.Kinematic == null)
                     {
-                        Behavior.Pursue(ref toFill, character, SteeringSpecs, theClosest);
+                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.Position);
+                    }
+                    else
+                    {
+                        Behavior.Pursue(ref toFill, character, SteeringSpecs, theClosest.Kinematic);
                     }
                     break;
 
                 case EBehavior.Evade:
                     theClosest = GetTheClosest(target, character);
 
-                    if (theClosest != null)
+                    if (theClosest == null)
+                        break;
+
+                    if (theClosest.Kinematic == null)
                     {
-                        Behavior.Evade(ref toFill, character, SteeringSpecs, theClosest);
+                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.Position);
+                    }
+                    else
+                    {
+                        Behavior.Evade(ref toFill, character, SteeringSpecs, theClosest.Kinematic);
                     }
                     break;
 
@@ -156,14 +154,14 @@ namespace MonsterAdventure.AI
             }
         }
 
-        private Kinematic GetTheClosest(List<Kinematic> kinematics, Kinematic character)
+        private Presence GetTheClosest(List<Presence> presences, Kinematic character)
         {
             float closestDistance = float.MaxValue;
             int bestIndex = -1;
 
-            for (int i = 0; i < kinematics.Count; i++)
+            for (int i = 0; i < presences.Count; i++)
             {
-                float currentDistance = Vector2.Distance(kinematics[i].GetPosition(), character.GetPosition());
+                float currentDistance = Vector2.Distance(presences[i].Position, character.GetPosition());
 
                 if (currentDistance < closestDistance)
                 {
@@ -177,7 +175,7 @@ namespace MonsterAdventure.AI
                 return null;
             }
 
-            return kinematics[bestIndex];
+            return presences[bestIndex];
         }
     }
 }

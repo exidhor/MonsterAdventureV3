@@ -9,10 +9,10 @@ namespace MonsterAdventure.AI
     public class InternalBehavior
     {
         public EBehavior Behavior;
-        public List<Kinematic> Targets;
+        public List<Presence> Targets;
         public float Weight;
 
-        public InternalBehavior(EBehavior behavior, List<Kinematic> targets, float weight)
+        public InternalBehavior(EBehavior behavior, List<Presence> targets, float weight)
         {
             Behavior = behavior;
             Targets = targets;

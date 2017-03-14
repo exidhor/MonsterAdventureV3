@@ -10,8 +10,31 @@ namespace MonsterAdventure
     {
         public Transform AbsorptionPoint;
 
+        public float Resistance;
+        [SerializeField]
+        private float LifePerBubble;
         public int MaxLife;
         public float Life;
         public float RegenerationPerSecond;
+
+        public bool IsAlive
+        {
+            get { return Life > 0; }
+        }
+
+        public float ExtractSoulBubble()
+        {
+            float lifeExtracted = LifePerBubble;
+
+            Life -= lifeExtracted;
+
+            if (!IsAlive)
+            {
+                lifeExtracted = -Life;
+                Life = 0;
+            }
+
+            return lifeExtracted;
+        }
     }
 }

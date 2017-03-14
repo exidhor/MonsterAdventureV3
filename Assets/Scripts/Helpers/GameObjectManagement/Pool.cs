@@ -12,6 +12,11 @@ namespace MonsterAdventure
     /// </summary>
     public partial class Pool : MonoBehaviour
     {
+        // We place the object at this position
+        // to avoid unnecessary collision event
+        // (because Unity never disable colliders)
+        public static Vector2 StoredPosition = new Vector2(1000000, 1000000);
+
         public List<Resource> Resources;
 
         private GameObject _model;
@@ -133,6 +138,7 @@ namespace MonsterAdventure
             {
                 Resources[index].IsUsed = false;
                 Resources[index].GameObject.SetActive(false);
+                Resources[index].GameObject.transform.position = StoredPosition;
 
                 if (_firstFreeResource > index)
                 {
@@ -185,6 +191,8 @@ namespace MonsterAdventure
             newGameObject.name = _model.name + " " + Resources.Count;
 
             newGameObject.SetActive(false);
+
+            newGameObject.transform.position = StoredPosition;
 
             return new Resource(newGameObject);
         }

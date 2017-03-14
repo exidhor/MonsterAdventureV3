@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(PerceptionComponent), typeof(Targeter), typeof(SteeringComponent))]
+    [RequireComponent(typeof(Kinematic))]
     public class IntelligenceComponent : MonoBehaviour
     {
         // reference to set in the editor (easier to organized the object structure by this way)
-        public Kinematic Kinematic;
+        private Kinematic _kinematic;
 
         // get the data from the world
-        private PerceptionComponent _percetionComp;
+        private PerceptionComponent _perceptionComp;
         // find the goal from the data
         private Targeter _targeter;
         // blend the different steering
@@ -21,14 +21,17 @@ namespace MonsterAdventure.AI
 
         private void Awake()
         {
-            _percetionComp = GetComponent<PerceptionComponent>();
+            _kinematic = GetComponent<Kinematic>();
+
+            _perceptionComp = GetComponentInChildren<PerceptionComponent>();
+
+            if (_perceptionComp == null)
+            {
+                Debug.LogWarning("No perception set for IntelligenceComponent on " + gameObject.name);
+            }
+
             _targeter = GetComponent<Targeter>();
             _steeringComp = GetComponent<SteeringComponent>();
-
-            if (Kinematic == null)
-            {
-                Debug.LogError("No kinematic set for IntelligenceComponent on " + gameObject.name);
-            }
         }
 
         void OnEnable()
@@ -50,13 +53,16 @@ namespace MonsterAdventure.AI
         public void PreUpdate()
         {
             // actualize the known data from the world
-            _percetionComp.Actualize();
+            if(_perceptionComp != null)
+                _perceptionComp.Actualize();
 
             // update the target from the data 
-            _targeter.Actualize();
+            if(_targeter != null)
+                _targeter.Actualize();
 
             // update the steering
-           _steeringComp.ActualizeSteering(Kinematic);
+            if(_steeringComp != null)
+                _steeringComp.ActualizeSteering(_kinematic);
         }
 
         /// <summary>
@@ -64,7 +70,8 @@ namespace MonsterAdventure.AI
         /// </summary>
         public void PostUpdate(float deltaTime)
         {
-            _steeringComp.ApplySteeringOnKinematic(Kinematic, deltaTime);
+            if(_steeringComp != null)
+                _steeringComp.ApplySteeringOnKinematic(_kinematic, deltaTime);
         }
     }
 }

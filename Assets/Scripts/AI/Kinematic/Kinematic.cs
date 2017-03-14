@@ -6,14 +6,11 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
-    [RequireComponent(typeof(InGameIdComponent), typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Rigidbody2D))]
     public class Kinematic : MonoBehaviour
     {
-        [HideInInspector]
-        public InGameIdComponent InGameIdComp;
-
-        public float OrientationInDegree;
         public float MaxSpeed;
+        public float OrientationInDegree;
 
         public float OrientationInRadian
         {
@@ -39,8 +36,6 @@ namespace MonsterAdventure.AI
 
         private void Start()
         {
-            InGameIdComp = GetComponent<InGameIdComponent>();
-
             OrientationInDegree = 0;
             _rotationInDegree = 0;
 

@@ -128,7 +128,7 @@ namespace MonsterAdventure
         /// <param name="list">CAREFUL : these object has to have a "InGameIdComponent"</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static List<T> Filter<T>(List<T> list, InGameId value)
+        public static List<T> Filter<T>(List<T> list, InGameId value, bool checkParent = false)
             where T : MonoBehaviour
         {
             // copy the list to not affect the old
@@ -137,11 +137,23 @@ namespace MonsterAdventure
             for (int i = 0; i < filtered.Count; i++)
             {
                 // if the object doesnt have the given value
-                if (!filtered[i].GetComponent<InGameIdComponent>().Id.Contains(value))
+                if (checkParent)
                 {
-                    // remove it
-                    filtered.RemoveAt(i);
-                    i--;
+                    if (!filtered[i].GetComponentInParent<InGameIdComponent>().Id.Contains(value))
+                    {
+                        // remove it
+                        filtered.RemoveAt(i);
+                        i--;
+                    }
+                }
+                else
+                {
+                    if (!filtered[i].GetComponent<InGameIdComponent>().Id.Contains(value))
+                    {
+                        // remove it
+                        filtered.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
 

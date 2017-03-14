@@ -6,34 +6,31 @@ using UnityEngine;
 
 namespace MonsterAdventure.AI
 {
+    [RequireComponent(typeof(CircleCollider2D))]
     public class PerceptionComponent : MonoBehaviour
     {
-        public Kinematic Kinematic;
+        private Kinematic _kinematic;
 
         public Arc VisionDetection;
         public Circle AutoDetection;
 
         private CircleCollider2D _circleCollider;
 
-        [SerializeField] private List<Kinematic> _collidedObjects;
-        [SerializeField] private List<Kinematic> _perceptibleObjects;
-
-        //private List<Kinematic> _collidedBuffer;
-        //private List<Kinematic> _perceptibleBuffer;
+        [SerializeField] private List<Presence> _collidedObjects;
+        [SerializeField] private List<Presence> _perceptibleObjects;
 
         void Awake()
         {
-            _collidedObjects = new List<Kinematic>();
-            _perceptibleObjects = new List<Kinematic>();
-
-            //_collidedBuffer = new List<Kinematic>();
-            //_perceptibleBuffer = new List<Kinematic>();
+            _collidedObjects = new List<Presence> ();
+            _perceptibleObjects = new List<Presence>();
 
             _circleCollider = GetComponent<CircleCollider2D>();
 
-            if (Kinematic == null)
+            _kinematic = GetComponentInParent<Kinematic>();
+
+            if (_kinematic == null)
             {
-                Debug.LogError("No kinematic set for IntelligenceComponent on " + gameObject.name);
+                Debug.LogWarning("No Kinematic set into PerceptionComponent");
             }
         }
 
@@ -54,17 +51,17 @@ namespace MonsterAdventure.AI
 
         private void ActualizeFromKinematic()
         {
-            VisionDetection.Center = Kinematic.GetPosition();
-            VisionDetection.AngleDirection = Kinematic.OrientationInDegree;
+            VisionDetection.Center = _kinematic.GetPosition();
+            VisionDetection.AngleDirection = _kinematic.OrientationInDegree;
 
-            AutoDetection.Center = Kinematic.GetPosition();
+            AutoDetection.Center = _kinematic.GetPosition();
         }
 
         private void FilterWithAutoDetection()
         {
             for (int i = 0; i < _collidedObjects.Count; i++)
             {
-                if (AutoDetection.IsInside(_collidedObjects[i].GetPosition()))
+                if (AutoDetection.IsInside(_collidedObjects[i].Position))
                 {
                     AddToPerceptibleObjets(_collidedObjects[i], i);
                     i--;
@@ -76,7 +73,7 @@ namespace MonsterAdventure.AI
         {
             for (int i = 0; i < _collidedObjects.Count; i++)
             {
-                if (VisionDetection.IsInto(_collidedObjects[i].GetPosition()))
+                if (VisionDetection.IsInto(_collidedObjects[i].Position))
                 {
                     AddToPerceptibleObjets(_collidedObjects[i], i);
                     i--;
@@ -84,53 +81,23 @@ namespace MonsterAdventure.AI
             }
         }
 
-        private void AddToPerceptibleObjets(Kinematic kinematic, int collidedIndex)
+        private void AddToPerceptibleObjets(Presence presence, int collidedIndex)
         {
             _collidedObjects.RemoveAt(collidedIndex);
-            _perceptibleObjects.Add(kinematic);
+            _perceptibleObjects.Add(presence);
         }
-
-        //private void OnCollisionStay2D(Collision2D collision)
-        //{
-        //    Kinematic Collidedkinematic = collision.gameObject.GetComponent<Kinematic>();
-
-        //    if (Collidedkinematic != null)
-        //    {
-        //        _collidedObjects.Add(Collidedkinematic);
-        //    }
-        //}
-
-        //private void OnTriggerEnter2D(Collider2D collider)
-        //{
-        //    Kinematic Collidedkinematic = collider.gameObject.GetComponent<Kinematic>();
-
-        //    if (Collidedkinematic != null)
-        //    {
-        //        _collidedObjects.Add(Collidedkinematic);
-        //    }
-        //}
-
-        //private void OnTriggerExit2D(Collider2D collider)
-        //{
-        //    Kinematic Collidedkinematic = collider.gameObject.GetComponent<Kinematic>();
-
-        //    if (Collidedkinematic != null)
-        //    {
-        //        _collidedObjects.Remove(Collidedkinematic);
-        //    }
-        //}
 
         private void OnTriggerStay2D(Collider2D collider)
         {
-            Kinematic Collidedkinematic = collider.gameObject.GetComponent<Kinematic>();
+            Presence CollidedPresence = collider.gameObject.GetComponent<Presence>();
 
-            if (Collidedkinematic != null)
+            if (CollidedPresence != null)
             {
-                _collidedObjects.Add(Collidedkinematic);
+                _collidedObjects.Add(CollidedPresence);
             }
         }
 
-        public List<Kinematic> GetPerceptibles()
+        public List<Presence> GetPerceptibles()
         {
             return _perceptibleObjects;
         }

@@ -16,6 +16,6 @@ namespace MonsterAdventure.AI
         public bool IsDefault = false;
 
         public InGameId TargetValue;
-        public List<Kinematic> TrackedTargets;
+        public List<Presence> TrackedTargets;
     }
 }
