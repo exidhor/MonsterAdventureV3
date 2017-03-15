@@ -161,3 +161,18 @@ namespace MonsterAdventure
         }
     }
 }
+
+// -1 -------------------- 1
+//             |              Norme
+//                         |  Max = 30
+//                 |          Actual = 5 / 30 
+// 5      Norme : 0 (=> offset = 5)
+//   
+
+// StartRate = the value setted by the user
+// WanderRate = the actual rate
+
+// WanderOrientation = The actual orientation
+// MaxOrientation = The max orientation (bounds)
+
+// wanderRate = (- WanderOrientation) / MaxOrientation) * WanderStart

@@ -97,7 +97,26 @@ namespace MonsterAdventure.AI
 
         private void ActivateGoal(GoalEntry goal)
         {
-            _steeringComp.AddBehavior(goal.behavior, goal.TrackedTargets, goal.Weight);
+            _steeringComp.AddBehavior(goal.behavior, ConvertList(goal.TrackedTargets), goal.Weight);
+        }
+
+        private List<Location> ConvertList(List<Presence> presences)
+        {
+            List<Location> locations = new List<Location>();
+
+            for (int i = 0; i < presences.Count; i++)
+            {
+                if (presences[i].Kinematic != null)
+                {
+                    locations.Add(new KinematicLocation(presences[i].Kinematic));
+                }
+                else
+                {
+                    locations.Add(new TransformLocation(presences[i].transform));
+                }
+            }
+
+            return locations;
         }
     }
 }

@@ -39,8 +39,8 @@ namespace MonsterAdventure.AI
                 // Acceleration tries to get the target velocity
                 //output.Linear -= character.GetVelocity();
 
-                if (specs.MinTimeToTarget > 0)
-                    output.Linear /= specs.MinTimeToTarget;
+                //if (specs.MinTimeToTarget > 0)
+                //    output.Linear /= specs.MinTimeToTarget;
 
                 // If that is too fast, then clip the speed
                 output.Linear = Vector2.ClampMagnitude(output.Linear, specs.MaxSpeed);

@@ -9,7 +9,8 @@ namespace MonsterAdventure.AI
     public enum LocationType
     {
         StationaryLocation,
-        TransformLocation
+        TransformLocation,
+        KinematicLocation
     }
 
     public abstract class Location
@@ -17,5 +18,15 @@ namespace MonsterAdventure.AI
         public abstract Vector2 GetPosition();
 
         public abstract LocationType GetLocationType();
+
+        public virtual Transform GetTransform()
+        {
+            return null;
+        }
+
+        public virtual Kinematic GetKinematic()
+        {
+            return null;
+        }
     }
 }

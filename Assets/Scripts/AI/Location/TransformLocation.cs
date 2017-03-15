@@ -25,7 +25,7 @@ namespace MonsterAdventure.AI
             return LocationType.TransformLocation;
         }
 
-        public Transform GetTransform()
+        public override Transform GetTransform()
         {
             return _transform;
         }

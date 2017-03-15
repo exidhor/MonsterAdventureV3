@@ -7,13 +7,15 @@ using UnityEngine;
 namespace MonsterAdventure
 {
     [Serializable]
-    public class Animation
+    public class MyAnimation
     {
-        public List<Sprite> Sprites;
+        public AnimationKey Key;
+
         public float Speed;
         public bool Flip;
         public bool Loop;
-        public string Tag;
+
+        public List<Sprite> Sprites;
 
         private float _currentTime;
         private int _currentIndex;
@@ -26,25 +28,30 @@ namespace MonsterAdventure
 
         public void Actualize(float deltaTime, SpriteRenderer spriteRenderer, Transform objectTransform)
         {
-            _currentTime += deltaTime;
-
-            while (_currentTime > Speed)
+            // we dodge the time update if there is no speed
+            if (Speed > float.Epsilon)
             {
-                _currentTime -= Speed;
-                _currentIndex++;
+                _currentTime += deltaTime;
 
-                if (_currentIndex > Sprites.Count - 1)
+                while (_currentTime > Speed)
                 {
-                    if (Loop)
+                    _currentTime -= Speed;
+                    _currentIndex++;
+
+                    if (_currentIndex > Sprites.Count - 1)
                     {
-                        _currentIndex = 0;
-                    }
-                    else
-                    {
-                        _currentIndex = Sprites.Count - 1;
+                        if (Loop)
+                        {
+                            _currentIndex = 0;
+                        }
+                        else
+                        {
+                            _currentIndex = Sprites.Count - 1;
+                        }
                     }
                 }
             }
+
 
             if (Flip)
             {
@@ -67,7 +74,19 @@ namespace MonsterAdventure
             }
 
             // set the sprite to the renderer
-            spriteRenderer.sprite = Sprites[_currentIndex];
+            if (_currentIndex < 0 || _currentIndex > Sprites.Count - 1)
+            {
+                Debug.LogWarning("bad Index : " + _currentIndex + " . It should be in range (0, " + Sprites.Count + ")." );
+                Debug.LogWarning("For the animation " + Key.Tag + " (number : " + Key.Number + ", orientation  : " +
+                                 Key.Orientation + ")");
+                Debug.LogWarning("For the object : " + objectTransform.name);
+
+                spriteRenderer.sprite = null;
+            }
+            else
+            {
+                spriteRenderer.sprite = Sprites[_currentIndex];
+            }
         }
     }
 }

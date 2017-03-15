@@ -17,7 +17,7 @@ namespace MonsterAdventure
     public class RandomGenerator : MonoSingleton<RandomGenerator>
     {
         public int seed;
-        public bool generateRandomSeed;
+        public bool generateRandomSeed = true;
 
         private Random _pseudoRandom;
 

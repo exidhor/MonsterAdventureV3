@@ -77,10 +77,22 @@ namespace MonsterAdventure
         public void InitRelease(PoolObject poolObject)
         {
             Action = PoolRequestAction.Free;
-           
+
             ResetPoolList(1);
 
             PoolObjects.Add(poolObject);
+        }
+
+        public void InitRelease(List<PoolObject> list)
+        {
+            Action = PoolRequestAction.Free;
+
+            ResetPoolList(list.Count);
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                PoolObjects.Add(list[i]);
+            }
         }
 
         public override string ToString()
@@ -90,7 +102,7 @@ namespace MonsterAdventure
 
         private void ResetPoolList(int capacity)
         {
-            PoolObjects.Capacity = capacity;
+            //PoolObjects.Capacity = capacity;
             PoolObjects.Clear();
         }
     }

@@ -28,7 +28,7 @@ namespace MonsterAdventure
             _lastWasFront = true;
             _lastWasBack = false;
 
-            _animator.SetCurrentAnimation("Front");
+            _animator.SetCurrentAnimation("idle", EOrientation.Face);
         }
 
         void FixedUpdate()
@@ -49,27 +49,27 @@ namespace MonsterAdventure
                 isDiagonal = true;
             }
 
-            if (horizontal > 0 && !_lastWasRight && (!isDiagonal || (isDiagonal && _lastWasLeft)))
+            if (horizontal > 0 && !_lastWasRight && (!isDiagonal || _lastWasLeft))
             {
-                _animator.SetCurrentAnimation("Right");
+                _animator.SetCurrentAnimation("idle", EOrientation.Right);
                 ResetBuffers();
                 _lastWasRight = true;
             }
-            else if (horizontal < 0 && !_lastWasLeft && (!isDiagonal || (isDiagonal && _lastWasRight)))
+            else if (horizontal < 0 && !_lastWasLeft && (!isDiagonal || _lastWasRight))
             {
-                _animator.SetCurrentAnimation("Left");
+                _animator.SetCurrentAnimation("idle", EOrientation.Left);
                 ResetBuffers();
                 _lastWasLeft = true;
             }
-            else if (vertical > 0 && !_lastWasBack && (!isDiagonal || (isDiagonal && _lastWasFront)))
+            else if (vertical > 0 && !_lastWasBack && (!isDiagonal || _lastWasFront))
             {
-                _animator.SetCurrentAnimation("Back");
+                _animator.SetCurrentAnimation("idle", EOrientation.Back);
                 ResetBuffers();
                 _lastWasBack = true;
             }
-            else if (vertical < 0 && !_lastWasFront && (!isDiagonal || (isDiagonal && _lastWasBack)))
+            else if (vertical < 0 && !_lastWasFront && (!isDiagonal || _lastWasBack))
             {
-                _animator.SetCurrentAnimation("Front");
+                _animator.SetCurrentAnimation("idle", EOrientation.Face);
                 ResetBuffers();
                 _lastWasFront = true;
             }

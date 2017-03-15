@@ -7,24 +7,27 @@ using UnityEngine;
 
 namespace MonsterAdventure
 {
+    [Serializable]
     public class DrainConnection
     {
+        private static readonly float minTimeBetweenBubble = 0.1f;
+
         public LifeComponent LifeComponent
         {
             get { return _lifeComponent; }
         }
 
         private LifeComponent _lifeComponent;
-        private Transform _drainEnd;
+        private DrainComponent _target;
         private float _bubbleSpeed;
 
         private float _timeBetweenBubble;
         private float _currentTime;
 
-        public DrainConnection(LifeComponent lifeComponent, Transform drainEnd, float bubbleSpeed, float drainForce)
+        public DrainConnection(LifeComponent lifeComponent, DrainComponent target, float bubbleSpeed, float drainForce)
         {
             _lifeComponent = lifeComponent;
-            _drainEnd = drainEnd;
+            _target = target;
             _bubbleSpeed = bubbleSpeed;
             
             _timeBetweenBubble = ComputeTimeBetweenBubble(drainForce);
@@ -33,7 +36,15 @@ namespace MonsterAdventure
 
         private float ComputeTimeBetweenBubble(float drainForce)
         {
-            return drainForce/_lifeComponent.Resistance;
+            if (_lifeComponent.Resistance == 0f)
+                return minTimeBetweenBubble;
+
+            float timeBetweenBubble = _lifeComponent.Resistance / drainForce;
+
+            if (timeBetweenBubble < minTimeBetweenBubble)
+                return minTimeBetweenBubble;
+
+            return timeBetweenBubble;
         }
 
         public void Actualize(float deltaTime)
@@ -58,7 +69,7 @@ namespace MonsterAdventure
                 _currentTime -= _timeBetweenBubble;
 
                 DrainEngine.Instance.ConstructSoulBubble(_lifeComponent.AbsorptionPoint.position, 
-                    _drainEnd,
+                    _target,
                     _bubbleSpeed,
                     _lifeComponent.ExtractSoulBubble());
             }

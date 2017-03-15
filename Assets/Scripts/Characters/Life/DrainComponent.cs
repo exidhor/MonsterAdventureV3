@@ -11,7 +11,9 @@ namespace MonsterAdventure
     [RequireComponent(typeof(CircleCollider2D))]
     public class DrainComponent : MonoBehaviour
     {
-        public Transform DrainEnd;
+        public Transform AbsorptionCenter;
+        public float AbsorptionRadius;
+
         public float DrainForce;
         public float BubbleSpeed;
         public InGameId TargetId;
@@ -19,30 +21,21 @@ namespace MonsterAdventure
         public float ReceivedLife;
 
         private CircleCollider2D _range;
-        //private List<Presence> _collidedObjects;
 
+        [SerializeField]
         private List<DrainConnection> _drainConnections;
 
         void Awake()
         {
             _range = GetComponent<CircleCollider2D>();
 
-            //_collidedObjects = new List<Presence>();
             _drainConnections = new List<DrainConnection>();
         }
 
         void Update()
         {
-            //List<Presence> filteredList = FilterCollidedObject();
-
-            //Drain(filteredList);
             Drain(Time.deltaTime);
         }
-
-        //private List<Presence> FilterCollidedObject()
-        //{
-        //   return InGameId.Filter<Presence>(_collidedObjects, TargetId, true);
-        //}
 
         private void Drain(float deltaTime)
         {
@@ -64,36 +57,10 @@ namespace MonsterAdventure
             }
         }
 
-        //private void Drain(List<Presence> filteredList)
-        //{
-        //    for (int i = 0; i < filteredList.Count; i++)
-        //    {
-        //        LifeComponent lifeComponent = filteredList[i].GetComponentInParent<LifeComponent>();
-
-        //        if (lifeComponent != null && lifeComponent.IsAlive)
-        //        {
-        //           MakeDrainConnection(lifeComponent);     
-        //        }
-        //    }
-        //}
-
-        //private void MakeDrainConnection(LifeComponent lifeComponent)
-        //{
-        //    DrainEngine.Instance.ConstructSoulBubble(lifeComponent.AbsorptionPoint.position, 
-        //        new TransformLocation(DrainEnd),
-        //        BubbleSpeed,
-        //        lifeComponent.ExtractSoulBubble());
-        //}
-
-        //void OnTriggerStay2D(Collider2D collider)
-        //{
-        //    Presence CollidedPresence = collider.gameObject.GetComponent<Presence>();
-
-        //    if (CollidedPresence != null)
-        //    {
-        //        _collidedObjects.Add(CollidedPresence);
-        //    }
-        //}
+        public void Absorb(SoulBubble soulBubble)
+        {
+            ReceivedLife += soulBubble.CarriedLife;
+        }
 
         void OnTriggerEnter2D(Collider2D collider)
         {
@@ -111,7 +78,7 @@ namespace MonsterAdventure
 
             if (collidedPresence != null && MatchedTarget(collidedPresence))
             {
-                CreateConnection(collidedPresence.GetComponent<LifeComponent>());
+                CreateConnection(collidedPresence.GetComponentInParent<LifeComponent> ());
             }
         }
 
@@ -124,7 +91,7 @@ namespace MonsterAdventure
 
         private void CreateConnection(LifeComponent lifeComponent)
         {
-            _drainConnections.Add(new DrainConnection(lifeComponent, DrainEnd, BubbleSpeed, DrainForce));
+            _drainConnections.Add(new DrainConnection(lifeComponent, this, BubbleSpeed, DrainForce));
         }
 
         private void TryToDisconnect(Collider2D collider)
@@ -133,9 +100,9 @@ namespace MonsterAdventure
 
             if (collidedPresence != null && MatchedTarget(collidedPresence))
             {
-                int index = FindIndexInDrainConnections(collidedPresence.GetComponent<LifeComponent>());
+                int index = FindIndexInDrainConnections(collidedPresence.GetComponentInParent<LifeComponent>());
 
-                if (index > 0)
+                if (index >= 0)
                 {
                     _drainConnections.RemoveAt(index);
                 }

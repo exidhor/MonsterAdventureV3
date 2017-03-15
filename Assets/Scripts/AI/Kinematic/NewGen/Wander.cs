@@ -15,7 +15,7 @@ namespace MonsterAdventure.AI
             // calculate the target to delegate to face
 
             // update the wanderorientation
-            specs.WanderOrientation += RandomGenerator.Instance.NextBinomialFloat(1) * specs.WanderRate;
+            specs.WanderOrientation = RandomGenerator.Instance.NextBinomialFloat(1) * specs.WanderRate;
 
             // calculate the combined target orientation
             float targetOrientationInDegree = specs.WanderOrientation + character.OrientationInDegree;

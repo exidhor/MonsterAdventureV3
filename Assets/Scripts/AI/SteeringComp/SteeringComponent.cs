@@ -24,7 +24,15 @@ namespace MonsterAdventure.AI
             InternalBehaviors.Clear();
         }
 
-        public void AddBehavior(EBehavior behavior, List<Presence> targets, float weight)
+        public void AddBehavior(EBehavior behavior, Location target, float weight)
+        {
+            List<Location> targets = new List<Location>();
+            targets.Add(target);
+
+            InternalBehaviors.Add(new InternalBehavior(behavior, targets, weight));
+        }
+
+        public void AddBehavior(EBehavior behavior, List<Location> targets, float weight)
         {
             InternalBehaviors.Add(new InternalBehavior(behavior, targets, weight));
         }
@@ -74,9 +82,10 @@ namespace MonsterAdventure.AI
             GiveSteering(internalBehavior.Behavior, character, internalBehavior.Targets, ref toFill);
         }
 
-        private void GiveSteering(EBehavior behavior, Kinematic character, List<Presence> target, ref SteeringOutput toFill)
+        private void GiveSteering(EBehavior behavior, Kinematic character, List<Location> target, ref SteeringOutput toFill)
         {
-            Presence theClosest = null;
+            Location theClosest = null;
+            Kinematic kinematicBuffer = null;
 
             switch (behavior)
             {
@@ -85,7 +94,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Seek(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Seek(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -94,7 +103,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -103,7 +112,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -112,7 +121,7 @@ namespace MonsterAdventure.AI
 
                     if (theClosest != null)
                     {
-                        Behavior.Face(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Face(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     break;
 
@@ -122,13 +131,15 @@ namespace MonsterAdventure.AI
                     if (theClosest == null)
                         break;
 
-                    if (theClosest.Kinematic == null)
+                    kinematicBuffer = theClosest.GetKinematic();
+
+                    if (kinematicBuffer == null)
                     {
-                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Arrive(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     else
                     {
-                        Behavior.Pursue(ref toFill, character, SteeringSpecs, theClosest.Kinematic);
+                        Behavior.Pursue(ref toFill, character, SteeringSpecs, kinematicBuffer);
                     }
                     break;
 
@@ -138,13 +149,15 @@ namespace MonsterAdventure.AI
                     if (theClosest == null)
                         break;
 
-                    if (theClosest.Kinematic == null)
+                    kinematicBuffer = theClosest.GetKinematic();
+
+                    if (kinematicBuffer == null)
                     {
-                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.Position);
+                        Behavior.Flee(ref toFill, character, SteeringSpecs, theClosest.GetPosition());
                     }
                     else
                     {
-                        Behavior.Evade(ref toFill, character, SteeringSpecs, theClosest.Kinematic);
+                        Behavior.Evade(ref toFill, character, SteeringSpecs, kinematicBuffer);
                     }
                     break;
 
@@ -154,14 +167,14 @@ namespace MonsterAdventure.AI
             }
         }
 
-        private Presence GetTheClosest(List<Presence> presences, Kinematic character)
+        private Location GetTheClosest(List<Location> locations, Kinematic character)
         {
             float closestDistance = float.MaxValue;
             int bestIndex = -1;
 
-            for (int i = 0; i < presences.Count; i++)
+            for (int i = 0; i < locations.Count; i++)
             {
-                float currentDistance = Vector2.Distance(presences[i].Position, character.GetPosition());
+                float currentDistance = Vector2.Distance(locations[i].GetPosition(), character.GetPosition());
 
                 if (currentDistance < closestDistance)
                 {
@@ -175,7 +188,7 @@ namespace MonsterAdventure.AI
                 return null;
             }
 
-            return presences[bestIndex];
+            return locations[bestIndex];
         }
     }
 }
