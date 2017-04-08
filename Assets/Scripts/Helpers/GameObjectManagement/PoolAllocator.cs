@@ -214,7 +214,7 @@ namespace MonsterAdventure
 
             for (int i = startIndex; i <= endIndex; i++)
             {
-                poolObjects[i].Instantiate();
+                poolObjects[i].Instantiate(Time.time);
             }
         }
 
@@ -233,7 +233,7 @@ namespace MonsterAdventure
 
             for (int i = startIndex; i <= endIndex; i++)
             {
-                poolObjects[i].Release();
+                poolObjects[i].Release(Time.time);
             }
         }
 

@@ -68,6 +68,7 @@ namespace MonsterAdventure
         {
             //Debug.Log("Instanciate Sector " + _coords);
             PoolAllocator.Instance.AddPoolRequest(ConstructPoolRequest(PoolRequestAction.Allocate));
+
         }
 
         private void DisableTracedObjects()

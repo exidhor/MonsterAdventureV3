@@ -9,16 +9,6 @@ namespace MonsterAdventure.Generation
     public class InstancierMethod : GenerationMethod
     {
         private SectorManager _sectorManager;
-        //private PoolTable _poolTable;
-
-        /*public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager, PoolTable poolTable)
-            : base(data, generationTable, GenerationType.Instancier, data.dataSource.GetLevel())
-        {
-            _sectorManager = sectorManager;
-            _poolTable = poolTable;
-
-            ComputeGeneration();
-        }*/
 
         public InstancierMethod(InstancierData data, GenerationTable generationTable, SectorManager sectorManager)
             : base(data, generationTable, GenerationType.Instancier, data.dataSource.GetLevel())
@@ -33,18 +23,18 @@ namespace MonsterAdventure.Generation
             CreatePools();
 
             Dictionary<int, InstancierValue> models = GetInstancierData().GetDictionary();
-            InstancierValue instancierValue = null;
             GenerationGrid sourceGrid = GetInstancierData().dataSource.GetGenerationMethod().GetGrid();
 
             for (int i = 0; i < sourceGrid.lineSize; i++)
             {
                 for (int j = 0; j < sourceGrid.lineSize; j++)
                 {
+                    InstancierValue instancierValue = null;
+
                     if (models.TryGetValue(sourceGrid.Get(i, j).GetIntValue(), 
                         out instancierValue))
                     {
                         // create TracedObject
-                        //TracedObject tracedObject = _poolTable.GetTracedObject(instancierValue);
                         TracedObject tracedObject = PoolTable.Instance.GetTracedObject(instancierValue);
 
                         tracedObject.Position = PositionFromGrid(i, j, sourceGrid);
@@ -61,7 +51,6 @@ namespace MonsterAdventure.Generation
 
             for (int i = 0; i < instancierValues.Count; i++)
             {
-                //_poolTable.AddPool(instancierValues[i]);
                 PoolTable.Instance.AddPool(instancierValues[i]);
             }
         }

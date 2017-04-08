@@ -55,9 +55,11 @@ namespace MonsterAdventure
         public TracedObject GetTracedObject(InstancierValue instancierValue)
         {
             Pool pool = GetPool(instancierValue.Prefab.GetInstanceID());
-            Trace trace = new Trace(instancierValue.Prefab.GetInstanceID());
 
-            return new TracedObject(trace, pool);
+            return pool.GetNewTracedObject(instancierValue, Time.time);
+
+            //Trace trace = new Trace(instancierValue.Prefab.GetInstanceID());
+            //return new TracedObject(trace, pool, Time.time);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonsterAdventure.Generation;
 using UnityEngine;
 
 namespace MonsterAdventure
@@ -206,6 +207,21 @@ namespace MonsterAdventure
             where T : MonoBehaviour
         {
             return new PoolEnum<T>(this);
+        }
+
+        public TracedObject GetNewTracedObject(InstancierValue instancierValue, float time)
+        {
+            Trace trace = new Trace(instancierValue.Prefab.GetInstanceID());
+            LifeTrace lifeTrace = new LifeTrace();
+
+            LifeComponent lifeComponent = _model.GetComponent<LifeComponent>();
+
+            if (lifeComponent != null)
+            {
+                lifeTrace.LifeData = lifeComponent.LifeData;
+            }
+
+            return new TracedObject(trace, lifeTrace, this, time);
         }
     }
 }

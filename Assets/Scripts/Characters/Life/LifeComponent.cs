@@ -8,22 +8,23 @@ namespace MonsterAdventure
 {
     public class LifeComponent : MonoBehaviour
     {
-        public Transform AbsorptionPoint;
+        public LifeData LifeData;
 
-        public float Resistance;
-        [SerializeField] private float LifePerBubble;
-        public int MaxLife;
-        public float Life;
-        public float Regeneration;
+        public Transform AbsorptionPoint;
 
         private float LifeLevelOffset
         {
-            get { return Regeneration; }
+            get { return LifeData.Regeneration; }
         }
+
+        //public bool IsAlive
+        //{
+        //    get { return LifeData.Life > float.Epsilon; }
+        //}
 
         public bool IsAlive
         {
-            get { return Life > float.Epsilon; }
+            get { return LifeData.IsAlive; }
         }
 
         private AnimatorComponent _animatorComponent;
@@ -37,7 +38,7 @@ namespace MonsterAdventure
         void Awake()
         {
             _animatorComponent = GetComponent<AnimatorComponent>();
-            _oldLifeBuffer = Life;
+            _oldLifeBuffer = LifeData.Life;
         }
 
         void Start()
@@ -48,9 +49,9 @@ namespace MonsterAdventure
 
         public float ExtractSoulBubble()
         {
-            AddLife(-LifePerBubble);
+            AddLife(-LifeData.LifePerBubble);
 
-            return LifePerBubble;
+            return LifeData.LifePerBubble;
         }
 
         private void ConstructLifeLevel()
@@ -61,7 +62,7 @@ namespace MonsterAdventure
             _lifeLevel.Sort((x, y) => x.CompareTo(y));
 
             // set the life level index
-            _currentLifeLevel = FindLifeLevelIndex(Life);
+            _currentLifeLevel = FindLifeLevelIndex(LifeData.Life);
             _currentTimeForBuffer = 0f;
         }
 
@@ -130,34 +131,35 @@ namespace MonsterAdventure
             while (_currentTimeForBuffer > _timeBetweenLifeSample)
             {
                 _currentTimeForBuffer -= _timeBetweenLifeSample;
-                _oldLifeBuffer = Life;
+                _oldLifeBuffer = LifeData.Life;
             }
         }
 
         private void ActualizeLife(float deltaTime)
         {
-            NaturalRegeneration(deltaTime);
+            //NaturalRegeneration(deltaTime);
+            LifeData.Regenerate(deltaTime);
 
             // verify the life level
             if (_animatorComponent != null)
                 CheckForLifeLevel();
         }
 
-        private void NaturalRegeneration(float deltaTime)
-        {
-            if (IsAlive)
-                AddLife(Regeneration*deltaTime);
-        }
+        //private void NaturalRegeneration(float deltaTime)
+        //{
+        //    if (LifeData.IsAlive)
+        //        AddLife(LifeData.Regeneration * deltaTime);
+        //}
 
         private void CheckForLifeLevel()
         {
-            if (!IsAlive)
+            if (!LifeData.IsAlive)
             {
                 _animatorComponent.SetCurrentAnimation("death");
                 return;
             }
 
-            int newLifeLevel = FindLifeLevelIndexWithOffset(_oldLifeBuffer, Life);
+            int newLifeLevel = FindLifeLevelIndexWithOffset(_oldLifeBuffer, LifeData.Life);
 
             if (newLifeLevel != -1 && newLifeLevel != _currentLifeLevel)
             {
@@ -170,23 +172,23 @@ namespace MonsterAdventure
 
         private void AddLife(float toAdd)
         {
-            SetLife(Life + toAdd);
+            LifeData.Life += toAdd;
         }
 
-        private void SetLife(float newLife)
-        {
-            if (newLife < 0)
-            {
-                Life = 0;
-            }
-            else if (newLife > MaxLife)
-            {
-                Life = MaxLife;
-            }
-            else
-            {
-                Life = newLife;
-            }
-        }
+        //private void SetLife(float newLife)
+        //{
+        //    if (newLife < 0)
+        //    {
+        //        Life = 0;
+        //    }
+        //    else if (newLife > MaxLife)
+        //    {
+        //        Life = MaxLife;
+        //    }
+        //    else
+        //    {
+        //        Life = newLife;
+        //    }
+        //}
     }
 }

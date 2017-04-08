@@ -9,9 +9,8 @@ namespace MonsterAdventure
     [Serializable]
     public class TracedObject : PoolObject
     {
-        //public PoolObject PoolObject;
-
         public Trace Trace;
+        public LifeTrace LifeTrace;
 
         public bool IsInstanciated
         {
@@ -24,19 +23,45 @@ namespace MonsterAdventure
             set { SetPosition(value); }
         }
 
-        //private Pool _pool;
+        private float _lastSaveTime;
 
-        public TracedObject(Trace trace, Pool pool)
+        public TracedObject(Trace trace, LifeTrace lifeTrace, Pool pool, float time)
             : base(pool)
         {
             Trace = trace;
+            LifeTrace = lifeTrace;
+
+            _lastSaveTime = time;
         }
 
-        public override void Instantiate()
+        public override void Instantiate(float time)
         {
-            base.Instantiate();
+            Debug.Log("Instantiate");
+
+            base.Instantiate(time);
 
             GameObject.transform.position = Position;
+
+            LifeComponent lifeComponent = GameObject.GetComponent<LifeComponent>();
+
+            if (lifeComponent != null)
+            {
+                LifeTrace.Activate(time - _lastSaveTime, lifeComponent);
+            }
+        }
+
+        public override void Release(float time)
+        {
+            base.Release(time);
+
+            LifeComponent lifeComponent = GameObject.GetComponent<LifeComponent>();
+
+            if (lifeComponent != null)
+            {
+                LifeTrace.Disable(lifeComponent);
+            }
+
+            _lastSaveTime = time;
         }
 
         public override string ToString()

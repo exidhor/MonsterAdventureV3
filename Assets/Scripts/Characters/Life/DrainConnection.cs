@@ -36,10 +36,10 @@ namespace MonsterAdventure
 
         private float ComputeTimeBetweenBubble(float drainForce)
         {
-            if (_lifeComponent.Resistance == 0f)
+            if (_lifeComponent.LifeData.Resistance == 0f)
                 return minTimeBetweenBubble;
 
-            float timeBetweenBubble = _lifeComponent.Resistance / drainForce;
+            float timeBetweenBubble = _lifeComponent.LifeData.Resistance / drainForce;
 
             if (timeBetweenBubble < minTimeBetweenBubble)
                 return minTimeBetweenBubble;

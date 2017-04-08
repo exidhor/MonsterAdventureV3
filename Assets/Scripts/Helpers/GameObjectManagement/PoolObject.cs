@@ -21,7 +21,7 @@ namespace MonsterAdventure
             if (Pool == null)
             {
                 Debug.LogError("Impossible to find the pool at the id : " + poolId
-                    + " in the object " + this);
+                               + " in the object " + this);
             }
 
             Init();
@@ -40,12 +40,12 @@ namespace MonsterAdventure
             IndexInPool = -1;
         }
 
-        public virtual void Instantiate()
+        public virtual void Instantiate(float time)
         {
             Pool.GetFreeResource(this);
         }
 
-        public virtual void Release()
+        public virtual void Release(float time)
         {
             Pool.ReleaseResource(this);
         }

@@ -42,7 +42,11 @@ namespace MonsterAdventure
             transform.position = start;
 
             _target = drainComponent;
+
             _carriedLife = life;
+            // set the scale in fonction of the carriedLife number
+            transform.localScale =  new Vector2(_carriedLife, _carriedLife);
+
             _poolObject = poolObject;
 
             _kinematic.MaxSpeed = speed;
