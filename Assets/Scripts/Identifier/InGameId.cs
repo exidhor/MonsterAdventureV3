@@ -33,7 +33,7 @@ namespace MonsterAdventure
         public bool Contains(InGameId value)
         {
             // 1 - we verify that the field target by the given value
-            // are set in the current objet by comparing the masks
+            // is set in the current objet by comparing the masks
             if (!MaskContains(value._mask))
                 return false;
 
@@ -161,18 +161,3 @@ namespace MonsterAdventure
         }
     }
 }
-
-// -1 -------------------- 1
-//             |              Norme
-//                         |  Max = 30
-//                 |          Actual = 5 / 30 
-// 5      Norme : 0 (=> offset = 5)
-//   
-
-// StartRate = the value setted by the user
-// WanderRate = the actual rate
-
-// WanderOrientation = The actual orientation
-// MaxOrientation = The max orientation (bounds)
-
-// wanderRate = (- WanderOrientation) / MaxOrientation) * WanderStart

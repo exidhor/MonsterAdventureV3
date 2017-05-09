@@ -21,9 +21,9 @@ namespace MonsterAdventure.AI
 
         private void Awake()
         {
-            _kinematic = GetComponent<Kinematic>();
+            _kinematic = GetComponentInParent<Kinematic>();
 
-            _perceptionComp = GetComponentInChildren<PerceptionComponent>();
+            _perceptionComp = GetComponent<PerceptionComponent>();
 
             if (_perceptionComp == null)
             {

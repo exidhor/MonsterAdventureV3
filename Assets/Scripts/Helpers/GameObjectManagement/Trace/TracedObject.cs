@@ -52,8 +52,6 @@ namespace MonsterAdventure
 
         public override void Release(float time)
         {
-            base.Release(time);
-
             LifeComponent lifeComponent = GameObject.GetComponent<LifeComponent>();
 
             if (lifeComponent != null)
@@ -62,6 +60,8 @@ namespace MonsterAdventure
             }
 
             _lastSaveTime = time;
+
+            base.Release(time);
         }
 
         public override string ToString()
